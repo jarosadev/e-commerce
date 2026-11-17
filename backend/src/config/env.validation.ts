@@ -29,9 +29,9 @@ export const envSchema = z.object({
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().default(1025),
   SMTP_SECURE: z
-    .string()
-    .transform((v) => v === 'true')
-    .default('false'),
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((v) => (typeof v === 'boolean' ? v : v.toLowerCase() === 'true')),
   SMTP_USER: z.string().optional().default(''),
   SMTP_PASS: z.string().optional().default(''),
   MAIL_FROM_NAME: z.string().default('Vendexa E-Commerce'),
@@ -55,4 +55,26 @@ export function validateEnv(config: Record<string, unknown>): EnvConfig {
     throw new Error('Fallo en validación de variables de entorno.');
   }
   return parsed.data;
+}
+
+const GOOGLE_OAUTH_PLACEHOLDER_PATTERNS = [
+  /^your[-_]?google[-_]?client[-_]?(id|secret)/i,
+  /^(placeholder|changeme|replace[-_]?me|todo|example|<[^>]+>)$/i,
+  /^example[-_]/i,
+];
+
+function isPlaceholderCredential(value: string | undefined): boolean {
+  if (!value) return true;
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  return GOOGLE_OAUTH_PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(trimmed));
+}
+
+export function isGoogleOAuthConfigured(
+  config: Pick<EnvConfig, 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET'>,
+): boolean {
+  return (
+    !isPlaceholderCredential(config.GOOGLE_CLIENT_ID) &&
+    !isPlaceholderCredential(config.GOOGLE_CLIENT_SECRET)
+  );
 }
