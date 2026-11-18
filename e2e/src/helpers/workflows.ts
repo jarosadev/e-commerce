@@ -75,6 +75,7 @@ export async function buildResetPasswordPayload(
   newPasswordValue: string,
 ): Promise<Record<string, string>> {
   const props = await getSchemaPropertiesForPath('/reset-password', 'post');
+  console.log('DEBUG: reset-password props', props);
   const tokenKey = props.includes('token')
     ? 'token'
     : props.includes('code') && !props.includes('otp')

@@ -71,3 +71,50 @@ export function buildSubdomainFrontendUrl(subdomain: string, path = '/'): string
   const normalized = path.startsWith('/') ? path : `/${path}`;
   return `http://${subdomain}.${ENV.platformBaseDomain}${normalized}`;
 }
+
+export async function loginViaUi(
+  page: Page,
+  options: {
+    email: string;
+    password: string;
+    targetPath: '/dashboard' | '/superadmin';
+  },
+): Promise<void> {
+  await page.goto(buildFrontendUrl('/login'), { waitUntil: 'networkidle' });
+  await page.locator('input[type="email"], input[name="email"]').first().fill(options.email);
+  await page.locator('input[type="password"], input[name="password"]').first().fill(options.password);
+
+  const submitBtn = page.locator('button[type="submit"]').first();
+  const [loginRes] = await Promise.all([
+    page.waitForResponse(
+      (res) =>
+        res.request().method() === 'POST' &&
+        (res.url().includes('/auth/') || res.url().includes('/login')),
+      { timeout: 15_000 },
+    ),
+    submitBtn.click(),
+  ]);
+  expect(
+    loginRes.status(),
+    `UI login POST failed with status ${loginRes.status()}`,
+  ).toBeLessThan(400);
+
+  // Allow client router redirect to settle if /login automatically navigates after login
+  await page
+    .waitForURL((url) => !url.pathname.startsWith('/login'), { timeout: 10_000 })
+    .catch(() => undefined);
+
+  const currentPath = new URL(page.url()).pathname;
+  if (!currentPath.startsWith(options.targetPath)) {
+    const navRes = await page.goto(buildFrontendUrl(options.targetPath), {
+      waitUntil: 'networkidle',
+    });
+    expect(navRes?.status(), `GET ${options.targetPath} failed`).toBe(200);
+  } else {
+    await page.waitForLoadState('networkidle');
+  }
+
+  const escapedPath = options.targetPath.replace(/\//g, '\\/');
+  await expect(page).toHaveURL(new RegExp(escapedPath));
+  await expect(page).not.toHaveURL(/\/login/);
+}

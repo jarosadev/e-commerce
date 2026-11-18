@@ -49,10 +49,20 @@ export function stripHtml(html: string): string {
     .replace(/<style[\s\S]*?<\/style>/gi, ' ')
     .replace(/<script[\s\S]*?<\/script>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
+    .replace(/&#(\d+);/g, (_match, dec: string) => {
+      const codePoint = Number.parseInt(dec, 10);
+      return codePoint >= 0 && codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : ' ';
+    })
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => {
+      const codePoint = Number.parseInt(hex, 16);
+      return codePoint >= 0 && codePoint <= 0x10ffff ? String.fromCodePoint(codePoint) : ' ';
+    })
     .replace(/&nbsp;/gi, ' ')
     .replace(/&amp;/gi, '&')
     .replace(/&lt;/gi, '<')
     .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&apos;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim();
 }

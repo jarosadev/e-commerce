@@ -5,8 +5,8 @@ import {
   extractData,
 } from '../../src/helpers/assertions';
 import { attachBrowserGuard } from '../../src/helpers/browser-helpers';
-import { HttpClient } from '../../src/helpers/http-client';
-import { MailpitClient } from '../../src/helpers/mailpit-client';
+import { CookieJar, HttpClient, type HttpResponse } from '../../src/helpers/http-client';
+import { MailpitClient, stripHtml } from '../../src/helpers/mailpit-client';
 import { startMockStack, type MockStackUrls } from '../../src/self/mock-stack';
 
 test.describe('E2E Harness Self-Test (Offline In-Process Mock Stack)', () => {
@@ -132,5 +132,56 @@ test.describe('E2E Harness Self-Test (Offline In-Process Mock Stack)', () => {
     await expect(page.locator('h1')).toContainText('Urban Threads Studio');
     await expect(page.locator('body')).toContainText('Hoodie Boxy Heavyweight 450gsm');
     guard.assertClean();
+  });
+
+  test('Helper edge cases: RFC7807 empty message array, OpenAPI empty title, numeric HTML entities, and empty Set-Cookie clearing', async () => {
+    // 1. assertRfc7807Error rejects empty/whitespace strings inside message array
+    for (const badMessage of [[''], ['valid', '   ']]) {
+      const fakeResponse: HttpResponse<unknown> = {
+        status: 400,
+        ok: false,
+        headers: new Headers(),
+        setCookies: [],
+        body: {
+          statusCode: 400,
+          error: 'Bad Request',
+          message: badMessage,
+          path: '/api/v1/test',
+          timestamp: new Date().toISOString(),
+          requestId: 'req-123',
+        },
+        rawText: JSON.stringify({ message: badMessage }),
+      };
+      expect(() => assertRfc7807Error(fakeResponse, 400)).toThrow();
+    }
+
+    // 2. assertOpenApi3Document rejects empty/whitespace info.title
+    for (const badTitle of ['', '   ']) {
+      expect(() =>
+        assertOpenApi3Document({
+          openapi: '3.0.3',
+          info: { title: badTitle, version: '1.0.0' },
+          paths: Object.fromEntries(Array.from({ length: 12 }, (_, i) => [`/p${i}`, {}])),
+          components: { schemas: { Ok: { type: 'object' } } },
+        }),
+      ).toThrow();
+    }
+
+    // 3. Mailpit stripHtml/extractOtpCode decode/strip numeric HTML entities before OTP
+    const mailpit = new MailpitClient(stack.mailpitApiUrl);
+    const htmlWithNumericEntities =
+      '<p>Icon &#100023; Hex &#x186B7; Overflow &#9999999; Tu código es <strong>827364</strong></p>';
+    const stripped = stripHtml(htmlWithNumericEntities);
+    expect(stripped).not.toContain('100023');
+    expect(stripped).not.toContain('9999999');
+    expect(mailpit.extractOtpCode({ Text: '', HTML: htmlWithNumericEntities })).toBe('827364');
+
+    // 4. CookieJar deletes cookie on empty value even without Max-Age=0 or Expires
+    const jar = new CookieJar();
+    jar.set('access_token', 'active-token');
+    expect(jar.has('access_token')).toBe(true);
+    jar.applySetCookies(['access_token=; Path=/; HttpOnly; SameSite=Lax']);
+    expect(jar.has('access_token')).toBe(false);
+    expect(jar.toCookieHeader()).toBe('');
   });
 });
