@@ -22,9 +22,7 @@ export const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string().default(''),
   GOOGLE_CLIENT_SECRET: z.string().default(''),
-  GOOGLE_CALLBACK_URL: z
-    .string()
-    .default('http://localhost:4000/api/v1/auth/google/callback'),
+  GOOGLE_CALLBACK_URL: z.string().default('http://localhost:4000/api/v1/auth/google/callback'),
 
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().default(1025),
