@@ -141,6 +141,7 @@ export class CreateSubscriptionPaymentDto {
   externalReference?: string;
 
   @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   receiptFileKey?: string;
 }
