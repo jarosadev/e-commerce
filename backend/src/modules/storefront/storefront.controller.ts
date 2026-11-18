@@ -1,9 +1,9 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Query, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Public } from '../../common/decorators/public.decorator';
 import { RequireTenant } from '../../common/decorators/require-tenant.decorator';
 import { StorefrontService } from './storefront.service';
-import { ValidateCouponDto } from './dto/storefront.dto';
+import { ValidateCouponDto, StorefrontProductsQueryDto } from './dto/storefront.dto';
 import { CurrentTenant } from '../../common/decorators/current-tenant.decorator';
 import { ResolvedTenantContext } from '../../common/cls/cls.types';
 
@@ -17,6 +17,16 @@ export class StorefrontController {
   @Get('config')
   getConfig(@CurrentTenant() tenant: ResolvedTenantContext) {
     return this.storefrontService.getConfig(tenant.id);
+  }
+
+  @Get('products')
+  listProducts(@CurrentTenant() tenant: ResolvedTenantContext, @Query() query: StorefrontProductsQueryDto) {
+    return this.storefrontService.listProducts(tenant.id, query);
+  }
+
+  @Get('products/:slug')
+  getProductBySlug(@CurrentTenant() tenant: ResolvedTenantContext, @Param('slug') slug: string) {
+    return this.storefrontService.getProductBySlug(tenant.id, slug);
   }
 
   @Post('coupons/validate')
