@@ -51,7 +51,8 @@ async function main() {
     create: {
       code: 'CRECIMIENTO_PRO',
       name: 'Plan Crecimiento Pro',
-      description: 'Dominio propio, importador Excel/CSV, mayorista B2B avanzado y recuperación de carritos.',
+      description:
+        'Dominio propio, importador Excel/CSV, mayorista B2B avanzado y recuperación de carritos.',
       priceMonthly: 49.0,
       priceYearly: 490.0,
       maxProducts: 1500,
@@ -71,7 +72,8 @@ async function main() {
     create: {
       code: 'MAYORISTA_ENTERPRISE',
       name: 'Plan Mayorista / Enterprise',
-      description: 'Sin límite práctico de catálogo, equipo extendido y automatizaciones completas B2B + B2C.',
+      description:
+        'Sin límite práctico de catálogo, equipo extendido y automatizaciones completas B2B + B2C.',
       priceMonthly: 99.0,
       priceYearly: 990.0,
       maxProducts: 50000,
@@ -118,7 +120,8 @@ async function main() {
           fiscalAddress: 'Av. Avellaneda 2840, Piso 2',
           businessCategory: 'Indumentaria & Calzado Urbano (Minorista + Mayorista)',
           acquisitionSource: 'Instagram B2B',
-          internalAdminNotes: 'Cliente puntual en pagos. Interesado en conectar dominio propio el próximo mes.',
+          internalAdminNotes:
+            'Cliente puntual en pagos. Interesado en conectar dominio propio el próximo mes.',
           onboardingCompleted: true,
         },
       },
@@ -134,7 +137,8 @@ async function main() {
     create: {
       slug: 'moda-mayorista',
       name: 'Urban Threads Studio',
-      description: 'Indumentaria premium urbana y equipamiento diario. Venta directa y precios escalonados para mayoristas.',
+      description:
+        'Indumentaria premium urbana y equipamiento diario. Venta directa y precios escalonados para mayoristas.',
       ownerId: owner1.id,
       status: TenantStatus.ACTIVE,
       currency: 'USD',
@@ -154,8 +158,10 @@ async function main() {
           accentColor: '#4F46E5',
           darkModeDefault: false,
           heroTitle: 'Colección cápsula B2C & Mayorista 2026',
-          heroSubtitle: 'Combina tallas y colores: precios mayoristas automáticos desde 6 unidades en tu carrito.',
-          announcementText: 'Envío gratis en compras mayores a 120 USD · Descuentos por volumen activados en vivo',
+          heroSubtitle:
+            'Combina tallas y colores: precios mayoristas automáticos desde 6 unidades en tu carrito.',
+          announcementText:
+            'Envío gratis en compras mayores a 120 USD · Descuentos por volumen activados en vivo',
         },
       },
       subscription: {
@@ -230,7 +236,8 @@ async function main() {
         categoryId: catApparel.id,
         name: 'Hoodie Boxy Heavyweight 450gsm',
         slug: 'hoodie-boxy-heavyweight-450gsm',
-        shortDescription: 'Algodón peinado 450gsm con caída estructurada. Ideal para marcas y retail.',
+        shortDescription:
+          'Algodón peinado 450gsm con caída estructurada. Ideal para marcas y retail.',
         description:
           'Confeccionado en felpa francesa 100% algodón de alto gramaje, costuras reforzadas y pre-encogido industrial.',
         brand: 'Urban Threads',
@@ -367,7 +374,8 @@ async function main() {
         categoryId: catAccessories.id,
         name: 'Mochila Commuter Impermeable 24L',
         slug: 'mochila-commuter-impermeable-24l',
-        shortDescription: 'Compartimento acolchado para laptop 16", cierres sellados YKK y puerto USB.',
+        shortDescription:
+          'Compartimento acolchado para laptop 16", cierres sellados YKK y puerto USB.',
         brand: 'Urban Gear',
         isFeatured: true,
         minOrderQty: 1,
@@ -420,7 +428,8 @@ async function main() {
           tenantId: store1.id,
           type: StorePaymentType.BANK_TRANSFER,
           title: 'Transferencia Bancaria Directa',
-          instructions: 'Transfiere el total y adjunta el comprobante PDF o captura para despacho prioritario.',
+          instructions:
+            'Transfiere el total y adjunta el comprobante PDF o captura para despacho prioritario.',
           accountDetailsJson: {
             banco: 'Banco Comercial Nacional',
             titular: 'Urban Threads Textil S.R.L.',
@@ -433,7 +442,8 @@ async function main() {
           tenantId: store1.id,
           type: StorePaymentType.QR_CODE,
           title: 'Pago con QR Interoperable',
-          instructions: 'Escanea el código QR desde tu app bancaria o billetera y sube el comprobante.',
+          instructions:
+            'Escanea el código QR desde tu app bancaria o billetera y sube el comprobante.',
           requiresReceipt: true,
         },
         {
@@ -519,7 +529,8 @@ async function main() {
           city: 'Córdoba',
           businessCategory: 'Pequeños Electrodomésticos & Hogar',
           acquisitionSource: 'Landing Orgánica',
-          internalAdminNotes: 'En período de prueba de 14 días. Requiere capacitación de plantilla CSV.',
+          internalAdminNotes:
+            'En período de prueba de 14 días. Requiere capacitación de plantilla CSV.',
           onboardingCompleted: true,
         },
       },

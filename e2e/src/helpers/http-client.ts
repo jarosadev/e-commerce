@@ -68,7 +68,7 @@ export class CookieJar {
       const isExpiredMaxAge = cookie.maxAge !== undefined && cookie.maxAge <= 0;
       const isExpiredDate =
         cookie.expires !== undefined && !Number.isNaN(Date.parse(cookie.expires)) && Date.parse(cookie.expires) <= Date.now();
-      const isEmptyCleared = cookie.value === '' && (isExpiredMaxAge || isExpiredDate);
+      const isEmptyCleared = cookie.value === '';
 
       if (isExpiredMaxAge || isExpiredDate || isEmptyCleared) {
         this.cookies.delete(cookie.name);

@@ -75,8 +75,10 @@ export function assertRfc7807Error(
 
   const msg = err.message ?? err.detail;
   const hasMessage =
-    (typeof msg === 'string' && msg.length > 0) ||
-    (Array.isArray(msg) && msg.length > 0);
+    (typeof msg === 'string' && msg.trim().length > 0) ||
+    (Array.isArray(msg) &&
+      msg.length > 0 &&
+      msg.every((m) => typeof m === 'string' && m.trim().length > 0));
   expect(hasMessage, `Missing message/detail in RFC 7807 payload: ${response.rawText}`).toBe(true);
 
   expect(typeof err.path, `Expected path string in RFC 7807 payload: ${response.rawText}`).toBe('string');
@@ -106,7 +108,11 @@ export function assertOpenApi3Document(doc: unknown): void {
   expect((spec.openapi as string).startsWith('3.')).toBe(true);
 
   expect(isRecord(spec.info)).toBe(true);
-  expect(typeof (spec.info as JsonRecord).title).toBe('string');
+  const infoTitle = (spec.info as JsonRecord).title;
+  expect(
+    typeof infoTitle === 'string' && infoTitle.trim().length > 0,
+    'OpenAPI info.title must be a non-empty string',
+  ).toBe(true);
 
   expect(isRecord(spec.paths)).toBe(true);
   const pathKeys = Object.keys(spec.paths as JsonRecord);

@@ -6,6 +6,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint \"{src,test,prisma}/**/*.ts\"",
+    "format": "prettier --write \"{src,test,prisma}/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:prod": "node dist/main",
@@ -15,6 +18,9 @@
     "openapi:export": "ts-node src/scripts/export-openapi.ts",
     "test": "jest",
     "test:e2e": "jest --config ./test/jest-e2e.json"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.750.0",
