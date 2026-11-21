@@ -62,6 +62,59 @@ describe('NotificationsService', () => {
       NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_APPROVED,
       expect.objectContaining({ externalReference: 'TRF-001', amount: '49.00' }),
     );
+
+    await service.sendSubscriptionPaymentRejected({
+      to: 'owner@test.local',
+      ownerName: 'Carlos',
+      storeName: 'Urban Threads',
+      planName: 'Crecimiento Pro',
+      amount: '49.00',
+      currency: 'USD',
+      reason: 'Monto insuficiente',
+      externalReference: 'TRF-002',
+    });
+    expect(mockQueue.add).toHaveBeenLastCalledWith(
+      NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_REJECTED,
+      expect.objectContaining({ reason: 'Monto insuficiente' }),
+    );
+
+    await service.sendSubscriptionExpiringSoon({
+      to: 'owner@test.local',
+      ownerName: 'Carlos',
+      storeName: 'Urban Threads',
+      planName: 'Crecimiento Pro',
+      expiresAt: '2026-12-01',
+      daysRemaining: 3,
+      billingUrl: 'http://localhost:3000/dashboard',
+    });
+    expect(mockQueue.add).toHaveBeenLastCalledWith(
+      NOTIFICATION_JOBS.SUBSCRIPTION_EXPIRING_SOON,
+      expect.objectContaining({ daysRemaining: 3 }),
+    );
+
+    await service.sendSubscriptionGracePeriod({
+      to: 'owner@test.local',
+      ownerName: 'Carlos',
+      storeName: 'Urban Threads',
+      planName: 'Crecimiento Pro',
+      graceEndsAt: '2026-12-06',
+      graceDays: 5,
+    });
+    expect(mockQueue.add).toHaveBeenLastCalledWith(
+      NOTIFICATION_JOBS.SUBSCRIPTION_GRACE_PERIOD,
+      expect.objectContaining({ graceDays: 5 }),
+    );
+
+    await service.sendSubscriptionSuspended({
+      to: 'owner@test.local',
+      ownerName: 'Carlos',
+      storeName: 'Urban Threads',
+      planName: 'Crecimiento Pro',
+    });
+    expect(mockQueue.add).toHaveBeenLastCalledWith(
+      NOTIFICATION_JOBS.SUBSCRIPTION_SUSPENDED,
+      expect.objectContaining({ storeName: 'Urban Threads' }),
+    );
   });
 
   it('closes the BullMQ queue on onModuleDestroy', async () => {

@@ -5,7 +5,11 @@ import { NOTIFICATIONS_QUEUE, NOTIFICATION_JOBS } from './notifications.constant
 import {
   OtpVerificationJobData,
   PasswordResetOtpJobData,
+  SubscriptionExpiringSoonJobData,
+  SubscriptionGracePeriodJobData,
   SubscriptionPaymentApprovedJobData,
+  SubscriptionPaymentRejectedJobData,
+  SubscriptionSuspendedJobData,
   WelcomeJobData,
 } from './notifications.types';
 
@@ -44,6 +48,54 @@ export class NotificationsService implements OnModuleDestroy {
       payload,
     );
     this.logger.debug(`Encolado email pago aprobado (${job.id ?? 'no-id'}) para ${payload.to}`);
+    return job.id;
+  }
+
+  async sendSubscriptionPaymentRejected(
+    payload: SubscriptionPaymentRejectedJobData,
+  ): Promise<string | undefined> {
+    const job = await this.notificationsQueue.add(
+      NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_REJECTED,
+      payload,
+    );
+    this.logger.debug(`Encolado email pago rechazado (${job.id ?? 'no-id'}) para ${payload.to}`);
+    return job.id;
+  }
+
+  async sendSubscriptionExpiringSoon(
+    payload: SubscriptionExpiringSoonJobData,
+  ): Promise<string | undefined> {
+    const job = await this.notificationsQueue.add(
+      NOTIFICATION_JOBS.SUBSCRIPTION_EXPIRING_SOON,
+      payload,
+    );
+    this.logger.debug(
+      `Encolado aviso de vencimiento próximo (${job.id ?? 'no-id'}) para ${payload.to}`,
+    );
+    return job.id;
+  }
+
+  async sendSubscriptionGracePeriod(
+    payload: SubscriptionGracePeriodJobData,
+  ): Promise<string | undefined> {
+    const job = await this.notificationsQueue.add(
+      NOTIFICATION_JOBS.SUBSCRIPTION_GRACE_PERIOD,
+      payload,
+    );
+    this.logger.debug(
+      `Encolado aviso de período de gracia (${job.id ?? 'no-id'}) para ${payload.to}`,
+    );
+    return job.id;
+  }
+
+  async sendSubscriptionSuspended(
+    payload: SubscriptionSuspendedJobData,
+  ): Promise<string | undefined> {
+    const job = await this.notificationsQueue.add(
+      NOTIFICATION_JOBS.SUBSCRIPTION_SUSPENDED,
+      payload,
+    );
+    this.logger.debug(`Encolado aviso de suspensión (${job.id ?? 'no-id'}) para ${payload.to}`);
     return job.id;
   }
 

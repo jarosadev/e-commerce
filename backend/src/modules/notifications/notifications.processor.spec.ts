@@ -138,6 +138,80 @@ describe('NotificationsProcessor', () => {
         html: expect.stringContaining('TRF-99'),
       }),
     );
+
+    await processor.process({
+      name: NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_REJECTED,
+      data: {
+        to: 'e@test.local',
+        ownerName: 'Carlos',
+        storeName: 'Urban Threads',
+        planName: 'Crecimiento Pro',
+        amount: '49.00',
+        currency: 'USD',
+        reason: 'Captura borrosa',
+        externalReference: 'TRF-100',
+      },
+    } as Job);
+    expect(sendMailMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: 'e@test.local',
+        html: expect.stringContaining('Captura borrosa'),
+      }),
+    );
+
+    await processor.process({
+      name: NOTIFICATION_JOBS.SUBSCRIPTION_EXPIRING_SOON,
+      data: {
+        to: 'f@test.local',
+        ownerName: 'Carlos',
+        storeName: 'Urban Threads',
+        planName: 'Crecimiento Pro',
+        expiresAt: '2026-12-01',
+        daysRemaining: 3,
+        billingUrl: 'http://localhost:3000/dashboard',
+      },
+    } as Job);
+    expect(sendMailMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: 'f@test.local',
+        subject: expect.stringContaining('3 días'),
+      }),
+    );
+
+    await processor.process({
+      name: NOTIFICATION_JOBS.SUBSCRIPTION_GRACE_PERIOD,
+      data: {
+        to: 'g@test.local',
+        ownerName: 'Carlos',
+        storeName: 'Urban Threads',
+        planName: 'Crecimiento Pro',
+        graceEndsAt: '2026-12-06',
+        graceDays: 5,
+      },
+    } as Job);
+    expect(sendMailMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: 'g@test.local',
+        html: expect.stringContaining('2026-12-06'),
+      }),
+    );
+
+    await processor.process({
+      name: NOTIFICATION_JOBS.SUBSCRIPTION_SUSPENDED,
+      data: {
+        to: 'h@test.local',
+        ownerName: 'Carlos',
+        storeName: 'Urban Threads',
+        planName: 'Crecimiento Pro',
+        billingUrl: 'http://localhost:3000/dashboard',
+      },
+    } as Job);
+    expect(sendMailMock).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        to: 'h@test.local',
+        subject: expect.stringContaining('suspendida'),
+      }),
+    );
   });
 
   it('throws on unknown job names and closes safely on onModuleDestroy even if worker is uninitialized', async () => {

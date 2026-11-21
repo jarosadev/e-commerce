@@ -9,7 +9,11 @@ import { NOTIFICATIONS_QUEUE, NOTIFICATION_JOBS } from './notifications.constant
 import {
   OtpVerificationJobData,
   PasswordResetOtpJobData,
+  SubscriptionExpiringSoonJobData,
+  SubscriptionGracePeriodJobData,
   SubscriptionPaymentApprovedJobData,
+  SubscriptionPaymentRejectedJobData,
+  SubscriptionSuspendedJobData,
   WelcomeJobData,
 } from './notifications.types';
 
@@ -134,6 +138,14 @@ export class NotificationsProcessor extends WorkerHost implements OnModuleDestro
         return this.renderWelcome(data as WelcomeJobData);
       case NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_APPROVED:
         return this.renderSubscriptionPaymentApproved(data as SubscriptionPaymentApprovedJobData);
+      case NOTIFICATION_JOBS.SUBSCRIPTION_PAYMENT_REJECTED:
+        return this.renderSubscriptionPaymentRejected(data as SubscriptionPaymentRejectedJobData);
+      case NOTIFICATION_JOBS.SUBSCRIPTION_EXPIRING_SOON:
+        return this.renderSubscriptionExpiringSoon(data as SubscriptionExpiringSoonJobData);
+      case NOTIFICATION_JOBS.SUBSCRIPTION_GRACE_PERIOD:
+        return this.renderSubscriptionGracePeriod(data as SubscriptionGracePeriodJobData);
+      case NOTIFICATION_JOBS.SUBSCRIPTION_SUSPENDED:
+        return this.renderSubscriptionSuspended(data as SubscriptionSuspendedJobData);
       default:
         throw new Error(`Tipo de notificación desconocido: ${jobName}`);
     }
@@ -286,6 +298,174 @@ export class NotificationsProcessor extends WorkerHost implements OnModuleDestro
       subject,
       text,
       html: wrapEmailHtml(this.platformName, 'Suscripción activada', bodyHtml),
+    };
+  }
+
+  private renderSubscriptionPaymentRejected(
+    payload: SubscriptionPaymentRejectedJobData,
+  ): RenderedEmail {
+    const subject = `Comprobante de pago rechazado — ${payload.storeName}`;
+    const reasonText = payload.reason
+      ? `Motivo indicado: ${payload.reason}`
+      : 'Por favor verifica los datos de la transferencia y vuelve a subir tu comprobante.';
+    const referenceText = payload.externalReference
+      ? `Referencia: ${payload.externalReference}`
+      : '';
+    const text = [
+      `Hola ${payload.ownerName},`,
+      '',
+      `No pudimos validar el pago de suscripción de tu tienda ${payload.storeName} (${payload.planName}).`,
+      `Monto: ${payload.amount} ${payload.currency}`,
+      referenceText,
+      reasonText,
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const bodyHtml = `
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Hola <strong>${escapeHtml(payload.ownerName)}</strong>,
+      </p>
+      <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5;">
+        El comprobante de pago para tu tienda <strong>${escapeHtml(payload.storeName)}</strong> (${escapeHtml(payload.planName)}) fue rechazado.
+      </p>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px; margin: 0 0 16px; color: #991b1b; font-size: 14px;">
+        <strong>Motivo:</strong> ${escapeHtml(payload.reason ?? 'Comprobante inválido o ilegible.')}
+      </div>
+      <ul style="margin: 0 0 16px; padding-left: 20px; font-size: 14px; line-height: 1.7; color: #334155;">
+        <li><strong>Monto reportado:</strong> ${escapeHtml(payload.amount)} ${escapeHtml(payload.currency)}</li>
+        ${payload.externalReference ? `<li><strong>Referencia:</strong> ${escapeHtml(payload.externalReference)}</li>` : ''}
+      </ul>
+    `;
+
+    return {
+      to: payload.to,
+      subject,
+      text,
+      html: wrapEmailHtml(this.platformName, 'Pago no aprobado', bodyHtml),
+    };
+  }
+
+  private renderSubscriptionExpiringSoon(payload: SubscriptionExpiringSoonJobData): RenderedEmail {
+    const subject = `Tu suscripción de ${payload.storeName} vence en ${payload.daysRemaining} días`;
+    const safeBillingUrl = sanitizeHttpUrl(payload.billingUrl);
+    const text = [
+      `Hola ${payload.ownerName},`,
+      '',
+      `Tu plan ${payload.planName} para la tienda ${payload.storeName} vence el ${payload.expiresAt} (${payload.daysRemaining} días restantes).`,
+      'Renueva a tiempo para mantener tu tienda online sin interrupciones.',
+      safeBillingUrl ? `Gestionar facturación: ${safeBillingUrl}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const ctaHtml = safeBillingUrl
+      ? `<p style="margin: 20px 0 0;">
+          <a href="${escapeHtml(safeBillingUrl)}" style="display: inline-block; background: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 8px;">
+            Renovar suscripción
+          </a>
+        </p>`
+      : '';
+
+    const bodyHtml = `
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Hola <strong>${escapeHtml(payload.ownerName)}</strong>,
+      </p>
+      <p style="margin: 0 0 16px; font-size: 15px; line-height: 1.5;">
+        Te recordamos que la suscripción <strong>${escapeHtml(payload.planName)}</strong> de <strong>${escapeHtml(payload.storeName)}</strong> vencerá en <strong>${escapeHtml(payload.daysRemaining)} días</strong> (${escapeHtml(payload.expiresAt)}).
+      </p>
+      ${ctaHtml}
+    `;
+
+    return {
+      to: payload.to,
+      subject,
+      text,
+      html: wrapEmailHtml(this.platformName, 'Recordatorio de renovación', bodyHtml),
+    };
+  }
+
+  private renderSubscriptionGracePeriod(payload: SubscriptionGracePeriodJobData): RenderedEmail {
+    const subject = `Acción requerida: ${payload.storeName} ingresó en período de gracia (${payload.graceDays} días)`;
+    const safeBillingUrl = sanitizeHttpUrl(payload.billingUrl);
+    const text = [
+      `Hola ${payload.ownerName},`,
+      '',
+      `La suscripción ${payload.planName} de tu tienda ${payload.storeName} ha vencido.`,
+      `Tienes un período de gracia de ${payload.graceDays} días (hasta ${payload.graceEndsAt}) antes de la suspensión automática.`,
+      safeBillingUrl ? `Regularizar pago aquí: ${safeBillingUrl}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const ctaHtml = safeBillingUrl
+      ? `<p style="margin: 20px 0 0;">
+          <a href="${escapeHtml(safeBillingUrl)}" style="display: inline-block; background: #d97706; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 8px;">
+            Regularizar suscripción
+          </a>
+        </p>`
+      : '';
+
+    const bodyHtml = `
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Hola <strong>${escapeHtml(payload.ownerName)}</strong>,
+      </p>
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; margin: 0 0 16px; color: #92400e; font-size: 14px;">
+        Tu tienda <strong>${escapeHtml(payload.storeName)}</strong> entró en estado <strong>Pago Pendiente (Período de Gracia)</strong> hasta el <strong>${escapeHtml(payload.graceEndsAt)}</strong>.
+      </div>
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Regulariza tu suscripción (<strong>${escapeHtml(payload.planName)}</strong>) dentro de los próximos <strong>${escapeHtml(payload.graceDays)} días</strong> para evitar la suspensión automática de tu tienda.
+      </p>
+      ${ctaHtml}
+    `;
+
+    return {
+      to: payload.to,
+      subject,
+      text,
+      html: wrapEmailHtml(this.platformName, 'Período de gracia activado', bodyHtml),
+    };
+  }
+
+  private renderSubscriptionSuspended(payload: SubscriptionSuspendedJobData): RenderedEmail {
+    const subject = `Tienda suspendida por vencimiento — ${payload.storeName}`;
+    const safeBillingUrl = sanitizeHttpUrl(payload.billingUrl);
+    const text = [
+      `Hola ${payload.ownerName},`,
+      '',
+      `El período de gracia finalizó y tu tienda ${payload.storeName} (${payload.planName}) ha sido suspendida temporalmente.`,
+      'Tus datos, catálogo y clientes siguen intactos. Registra tu pago para reactivarla inmediatamente.',
+      safeBillingUrl ? `Reactivar tienda: ${safeBillingUrl}` : '',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const ctaHtml = safeBillingUrl
+      ? `<p style="margin: 20px 0 0;">
+          <a href="${escapeHtml(safeBillingUrl)}" style="display: inline-block; background: #dc2626; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 20px; border-radius: 8px;">
+            Reactivar mi tienda
+          </a>
+        </p>`
+      : '';
+
+    const bodyHtml = `
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Hola <strong>${escapeHtml(payload.ownerName)}</strong>,
+      </p>
+      <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px; margin: 0 0 16px; color: #991b1b; font-size: 14px;">
+        Tu tienda <strong>${escapeHtml(payload.storeName)}</strong> fue suspendida temporalmente al finalizar el período de gracia.
+      </div>
+      <p style="margin: 0 0 12px; font-size: 15px; line-height: 1.5;">
+        Toda tu información permanece segura. En cuanto registres o apruebes el pago de tu plan <strong>${escapeHtml(payload.planName)}</strong>, tu tienda volverá a estar online de inmediato.
+      </p>
+      ${ctaHtml}
+    `;
+
+    return {
+      to: payload.to,
+      subject,
+      text,
+      html: wrapEmailHtml(this.platformName, 'Suscripción suspendida', bodyHtml),
     };
   }
 
