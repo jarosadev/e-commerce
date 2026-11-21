@@ -42,6 +42,13 @@ export const envSchema = z.object({
   S3_PUBLIC_BUCKET: z.string().default('catalog-public'),
   S3_PRIVATE_BUCKET: z.string().default('receipts-private'),
   S3_PUBLIC_BASE_URL: z.string().default('http://localhost:9000/catalog-public'),
+
+  STRIPE_SECRET_KEY: z.string().optional().default(''),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(''),
+  MERCADOPAGO_ACCESS_TOKEN: z.string().optional().default(''),
+  MERCADOPAGO_WEBHOOK_SECRET: z.string().optional().default(''),
+  SUBSCRIPTION_GRACE_DAYS: z.coerce.number().int().min(1).max(30).default(5),
+  SUBSCRIPTION_REMINDER_DAYS: z.coerce.number().int().min(1).max(14).default(3),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

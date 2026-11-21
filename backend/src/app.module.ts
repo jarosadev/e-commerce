@@ -20,6 +20,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 import { PlansModule } from './modules/plans/plans.module';
 import { PlatformAdminModule } from './modules/platform-admin/platform-admin.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { CartModule } from './modules/cart/cart.module';
 import { TenantsModule } from './modules/tenants/tenants.module';
 import { RedisModule } from './redis/redis.module';
@@ -90,6 +91,7 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     AuthModule,
     PlansModule,
     PlatformAdminModule,
+    SubscriptionsModule,
     StorefrontModule,
     CartModule,
     TenantsModule,
