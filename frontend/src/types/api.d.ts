@@ -403,8 +403,25 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Get platform overview */
+        /** Get platform overview & normalized SaaS MRR KPIs */
         get: operations["PlatformAdminController_getOverview"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/platform-admin/clients": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List CRM store owners with search, tenantStatus and planCode filters */
+        get: operations["PlatformAdminController_listClients"];
         put?: never;
         post?: never;
         delete?: never;
@@ -420,13 +437,32 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get full CRM client fiche including stores, quota usage and payments */
+        get: operations["PlatformAdminController_getClientDetail"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
         head?: never;
+        /** Update CRM client fiscal/commercial profile and internal notes */
         patch: operations["PlatformAdminController_updateClientProfile"];
+        trace?: never;
+    };
+    "/api/v1/platform-admin/clients/{ownerId}/notes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Append timestamped note to CRM client internal log */
+        post: operations["PlatformAdminController_appendClientNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/platform-admin/tenants/{tenantId}/status": {
@@ -442,7 +478,26 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Update tenant operational status (TRIAL, ACTIVE, PAST_DUE, SUSPENDED) */
         patch: operations["PlatformAdminController_updateTenantStatus"];
+        trace?: never;
+    };
+    "/api/v1/platform-admin/payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List SaaS subscription payments with reviewStatus and tenantId filters */
+        get: operations["PlatformAdminController_listPayments"];
+        put?: never;
+        /** Register a manual SaaS subscription payment on behalf of a store */
+        post: operations["PlatformAdminController_createPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/platform-admin/payments/{paymentId}/review": {
@@ -458,7 +513,161 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Approve or reject a pending SaaS subscription payment */
         patch: operations["PlatformAdminController_reviewPayment"];
+        trace?: never;
+    };
+    "/api/v1/platform-admin/subscriptions/run-lifecycle-check": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Execute SaaS subscription lifecycle sweep (expiring reminders, PAST_DUE grace period, auto-suspension) */
+        post: operations["PlatformAdminController_runLifecycleCheck"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/current": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene suscripción actual, cuotas usadas, historial de pagos y planes disponibles */
+        get: operations["SubscriptionsController_getCurrentSubscription"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/change-plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cambia de plan SaaS o ciclo de facturación validando cuotas actuales */
+        post: operations["SubscriptionsController_changePlan"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/checkout/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea una sesión de Stripe Billing Checkout (modo live o sandbox local) */
+        post: operations["SubscriptionsController_createStripeCheckout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/checkout/mercadopago": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea una suscripción recurrente en MercadoPago (modo live o sandbox local) */
+        post: operations["SubscriptionsController_createMercadoPagoCheckout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/manual-payments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reporta un pago manual de suscripción por transferencia para validación SuperAdmin */
+        post: operations["SubscriptionsController_submitManualPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Programa o revierte la cancelación al final del período actual */
+        post: operations["SubscriptionsController_toggleCancelAtPeriodEnd"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/webhooks/stripe": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Webhook idempotente de Stripe Billing (activación, fallo de pago y cancelación) */
+        post: operations["SubscriptionsController_handleStripeWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/subscriptions/webhooks/mercadopago": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Webhook idempotente de MercadoPago Suscripciones */
+        post: operations["SubscriptionsController_handleMercadoPagoWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/storefront/config": {
@@ -469,6 +678,38 @@ export interface paths {
             cookie?: never;
         };
         get: operations["StorefrontController_getConfig"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/storefront/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StorefrontController_listProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/storefront/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["StorefrontController_getProductBySlug"];
         put?: never;
         post?: never;
         delete?: never;
@@ -518,6 +759,23 @@ export interface paths {
         };
         /** Resuelve información pública de tienda por x-tenant-host, x-tenant-slug o ?slug= */
         get: operations["TenantsController_resolveTenant"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/tenants/check-slug": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Verifica disponibilidad en tiempo real de un subdominio para el onboarding */
+        get: operations["TenantsController_checkSlug"];
         put?: never;
         post?: never;
         delete?: never;
@@ -802,6 +1060,186 @@ export interface components {
             internalAdminNotes?: string | null;
             onboardingCompleted?: boolean | null;
         };
+        AppendClientNoteDto: {
+            /** @example Llamada de seguimiento: confirmó upgrade a Plan Pro la próxima semana. */
+            note: string;
+        };
+        UpdateTenantStatusDto: {
+            /** @enum {string} */
+            status: "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED";
+        };
+        CreateSubscriptionPaymentDto: {
+            subscriptionId?: string;
+            tenantId?: string;
+            amount: number;
+            currency?: string;
+            provider?: string;
+            externalReference?: string;
+            receiptFileKey?: string;
+        };
+        ReviewSubscriptionPaymentDto: {
+            /** @enum {string} */
+            reviewStatus: "PENDING" | "APPROVED" | "REJECTED";
+            note?: string;
+        };
+        LifecycleRunResultDto: {
+            remindedCount: number;
+            movedToGraceCount: number;
+            suspendedCount: number;
+            canceledAtPeriodEndCount: number;
+            executedAt: string;
+        };
+        SubscriptionUsageDto: {
+            productsUsed: number;
+            maxProducts: number;
+            productsUsagePercent: number;
+            staffUsed: number;
+            maxStaff: number;
+            staffUsagePercent: number;
+        };
+        SubscriptionPaymentItemDto: {
+            id: string;
+            /** @enum {string} */
+            provider: "STRIPE" | "MERCADOPAGO" | "MANUAL_TRANSFER";
+            amount: number;
+            currency: string;
+            externalReference?: Record<string, never> | null;
+            receiptFileKey?: Record<string, never> | null;
+            /** @enum {string} */
+            reviewStatus: "PENDING" | "APPROVED" | "REJECTED";
+            paidAt?: Record<string, never> | null;
+            createdAt: string;
+        };
+        SubscriptionSummaryDto: {
+            tenantId: string;
+            tenantSlug: string;
+            tenantName: string;
+            /** @enum {string} */
+            tenantStatus: "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED";
+            subscriptionId: string;
+            /** @enum {string} */
+            status: "TRIALING" | "ACTIVE" | "PAST_DUE" | "CANCELED" | "SUSPENDED";
+            /** @enum {string} */
+            billingCycle: "MONTHLY" | "YEARLY";
+            currentPeriodStart: string;
+            currentPeriodEnd: string;
+            gracePeriodEndsAt?: Record<string, never> | null;
+            cancelAtPeriodEnd: boolean;
+            daysUntilPeriodEnd: number;
+            isInGracePeriod: boolean;
+            graceDaysRemaining: number;
+            plan: Record<string, never>;
+            usage: components["schemas"]["SubscriptionUsageDto"];
+            payments: components["schemas"]["SubscriptionPaymentItemDto"][];
+            availablePlans: Record<string, never>[];
+        };
+        ChangePlanDto: {
+            /** @example CRECIMIENTO_PRO */
+            planCode?: string;
+            planId?: string;
+            /**
+             * @default MONTHLY
+             * @enum {string}
+             */
+            billingCycle: "MONTHLY" | "YEARLY";
+        };
+        CreateCheckoutSessionDto: {
+            /** @example CRECIMIENTO_PRO */
+            planCode?: string;
+            /**
+             * @default MONTHLY
+             * @enum {string}
+             */
+            billingCycle: "MONTHLY" | "YEARLY";
+            /** @example http://localhost:3000/dashboard?billing=success */
+            successUrl?: string;
+            /** @example http://localhost:3000/dashboard?billing=cancelled */
+            cancelUrl?: string;
+        };
+        CheckoutSessionResponseDto: {
+            /** @enum {string} */
+            provider: "STRIPE" | "MERCADOPAGO";
+            /** @enum {string} */
+            mode: "live" | "sandbox";
+            sessionId: string;
+            checkoutUrl: string;
+            amount: number;
+            currency: string;
+            planCode: string;
+            /** @enum {string} */
+            billingCycle: "MONTHLY" | "YEARLY";
+        };
+        SubmitManualSubscriptionPaymentDto: {
+            /** @example 49 */
+            amount: number;
+            /**
+             * @default USD
+             * @example USD
+             */
+            currency: string;
+            /** @example TRF-2026-88412 */
+            externalReference: string;
+            /** @example receipts/2026/trf-88412.pdf */
+            receiptFileKey?: string;
+            /** @enum {string} */
+            billingCycle?: "MONTHLY" | "YEARLY";
+            /** @example CRECIMIENTO_PRO */
+            targetPlanCode?: string;
+        };
+        CancelSubscriptionDto: {
+            /** @example true */
+            cancelAtPeriodEnd: boolean;
+        };
+        StripeWebhookPayloadDto: {
+            /** @example evt_test_123456 */
+            id: string;
+            /**
+             * @description Supported types: invoice.payment_succeeded, checkout.session.completed, invoice.payment_failed, customer.subscription.deleted
+             * @example invoice.payment_succeeded
+             */
+            type: string;
+            /**
+             * @example {
+             *       "object": {
+             *         "amount_paid": 4900,
+             *         "currency": "usd",
+             *         "subscription": "sub_stripe_123",
+             *         "metadata": {
+             *           "tenantId": "uuid",
+             *           "billingCycle": "MONTHLY"
+             *         }
+             *       }
+             *     }
+             */
+            data: Record<string, never>;
+        };
+        WebhookAckDto: {
+            received: boolean;
+            duplicate: boolean;
+            provider: string;
+            eventId: string;
+            actionTaken: string;
+        };
+        MercadoPagoWebhookPayloadDto: {
+            /** @example mp_evt_987654 */
+            id: string;
+            /**
+             * @description Supported actions/types: payment.approved, subscription_authorized_payment, payment.rejected, subscription_cancelled
+             * @example payment.approved
+             */
+            action: string;
+            /**
+             * @example {
+             *       "tenantId": "uuid",
+             *       "subscriptionId": "uuid",
+             *       "amount": 49,
+             *       "currency": "USD",
+             *       "externalSubscriptionId": "mp_preapproval_123",
+             *       "billingCycle": "MONTHLY"
+             *     }
+             */
+            data: Record<string, never>;
+        };
         ValidateCouponDto: {
             /** @example BIENVENIDA10 */
             code: string;
@@ -869,6 +1307,14 @@ export interface components {
             subscription?: components["schemas"]["TenantSubscriptionSummaryDto"] | null;
             createdAt: string;
             updatedAt: string;
+        };
+        SlugAvailabilityDto: {
+            /** @example mi-tienda-b2b */
+            slug: string;
+            /** @example true */
+            available: boolean;
+            /** @example Subdominio disponible. */
+            reason?: Record<string, never> | null;
         };
         CreateTenantDto: {
             /** @example Urban Threads Studio */
@@ -1577,6 +2023,54 @@ export interface operations {
             };
         };
     };
+    PlatformAdminController_listClients: {
+        parameters: {
+            query?: {
+                search?: string;
+                tenantStatus?: "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED";
+                planCode?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformAdminController_getClientDetail: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                ownerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     PlatformAdminController_updateClientProfile: {
         parameters: {
             query?: never;
@@ -1603,6 +2097,32 @@ export interface operations {
             };
         };
     };
+    PlatformAdminController_appendClientNote: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                ownerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppendClientNoteDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     PlatformAdminController_updateTenantStatus: {
         parameters: {
             query?: never;
@@ -1615,9 +2135,62 @@ export interface operations {
             };
             cookie?: never;
         };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTenantStatusDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformAdminController_listPayments: {
+        parameters: {
+            query?: {
+                reviewStatus?: "PENDING" | "APPROVED" | "REJECTED";
+                tenantId?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
         requestBody?: never;
         responses: {
             200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    PlatformAdminController_createPayment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateSubscriptionPaymentDto"];
+            };
+        };
+        responses: {
+            201: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -1637,13 +2210,245 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReviewSubscriptionPaymentDto"];
+            };
+        };
         responses: {
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    PlatformAdminController_runLifecycleCheck: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["LifecycleRunResultDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_getCurrentSubscription: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionSummaryDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_changePlan: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ChangePlanDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionSummaryDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_createStripeCheckout: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCheckoutSessionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutSessionResponseDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_createMercadoPagoCheckout: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCheckoutSessionDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutSessionResponseDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_submitManualPayment: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SubmitManualSubscriptionPaymentDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionPaymentItemDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_toggleCancelAtPeriodEnd: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelSubscriptionDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SubscriptionSummaryDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_handleStripeWebhook: {
+        parameters: {
+            query?: never;
+            header: {
+                "stripe-signature": string;
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StripeWebhookPayloadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAckDto"];
+                };
+            };
+        };
+    };
+    SubscriptionsController_handleMercadoPagoWebhook: {
+        parameters: {
+            query?: never;
+            header: {
+                "x-signature": string;
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MercadoPagoWebhookPayloadDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAckDto"];
+                };
             };
         };
     };
@@ -1655,6 +2460,60 @@ export interface operations {
                 "x-tenant-host"?: string;
             };
             path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StorefrontController_listProducts: {
+        parameters: {
+            query?: {
+                search?: string;
+                categorySlug?: string;
+                categoryId?: string;
+                featured?: boolean;
+                inStock?: boolean;
+                wholesaleOnly?: boolean;
+                minPrice?: number;
+                maxPrice?: number;
+                sort?: "featured" | "newest" | "name_asc" | "price_asc" | "price_desc";
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StorefrontController_getProductBySlug: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                slug: string;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -1735,6 +2594,30 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TenantDetailDto"];
+                };
+            };
+        };
+    };
+    TenantsController_checkSlug: {
+        parameters: {
+            query: {
+                slug: string;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SlugAvailabilityDto"];
                 };
             };
         };
