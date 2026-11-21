@@ -154,7 +154,24 @@ export class ReviewSubscriptionPaymentDto {
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
+  @MaxLength(500)
   note?: string;
+}
+
+export class UpdateTenantStatusDto {
+  @ApiProperty({ enum: TenantStatus })
+  @IsEnum(TenantStatus)
+  status: TenantStatus;
+}
+
+export class AppendClientNoteDto {
+  @ApiProperty({
+    example: 'Llamada de seguimiento: confirmó upgrade a Plan Pro la próxima semana.',
+  })
+  @IsString()
+  @MinLength(2)
+  @MaxLength(1000)
+  note: string;
 }
 
 export class ListPaymentsQueryDto {

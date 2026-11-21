@@ -26,11 +26,12 @@ import { TenantResolutionService } from '../../common/services/tenant-resolution
 import { PrismaService } from '../../database/prisma.service';
 import {
   CreateTenantDto,
+  SlugAvailabilityDto,
   StoreThemeDto,
   TenantDetailDto,
   UpdateStoreThemeDto,
 } from './dto/tenant.dto';
-import { RESERVED_TENANT_SLUGS, TRIAL_DAYS } from './tenants.constants';
+import { RESERVED_TENANT_SLUGS, TENANT_SLUG_REGEX, TRIAL_DAYS } from './tenants.constants';
 
 type TenantWithDetails = Tenant & {
   theme: StoreTheme | null;
@@ -86,6 +87,44 @@ export class TenantsService {
     }
 
     return this.serializeTenantDetail(tenantRecord);
+  }
+
+  async checkSlugAvailability(rawSlug: string): Promise<SlugAvailabilityDto> {
+    const slug = rawSlug.trim().toLowerCase();
+    if (slug.length < 3 || slug.length > 63 || !TENANT_SLUG_REGEX.test(slug)) {
+      return {
+        slug,
+        available: false,
+        reason: 'Usa entre 3 y 63 caracteres: solo minúsculas, números y guiones medios.',
+      };
+    }
+
+    if (RESERVED_TENANT_SLUGS.has(slug)) {
+      return {
+        slug,
+        available: false,
+        reason: 'Este subdominio está reservado por la plataforma.',
+      };
+    }
+
+    const existing = await this.prisma.tenant.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+
+    if (existing) {
+      return {
+        slug,
+        available: false,
+        reason: 'Este subdominio ya está ocupado por otra tienda.',
+      };
+    }
+
+    return {
+      slug,
+      available: true,
+      reason: null,
+    };
   }
 
   async createTenant(

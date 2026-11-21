@@ -29,8 +29,10 @@ import { Public } from '../../common/decorators/public.decorator';
 import { RequireTenant, SkipTenantStatus } from '../../common/decorators/require-tenant.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
 import {
+  CheckSlugQueryDto,
   CreateTenantDto,
   ResolveTenantQueryDto,
+  SlugAvailabilityDto,
   StoreThemeDto,
   TenantDetailDto,
   UpdateStoreThemeDto,
@@ -53,6 +55,17 @@ export class TenantsController {
     @Query() query: ResolveTenantQueryDto,
   ): Promise<TenantDetailDto> {
     return this.tenantsService.resolvePublicTenant(req, query.slug);
+  }
+
+  @Get('check-slug')
+  @Public()
+  @SkipTenantStatus()
+  @ApiOperation({
+    summary: 'Verifica disponibilidad en tiempo real de un subdominio para el onboarding',
+  })
+  @ApiOkResponse({ type: SlugAvailabilityDto })
+  checkSlug(@Query() query: CheckSlugQueryDto): Promise<SlugAvailabilityDto> {
+    return this.tenantsService.checkSlugAvailability(query.slug);
   }
 
   @Post()

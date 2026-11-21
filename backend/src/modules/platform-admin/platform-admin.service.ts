@@ -1,27 +1,28 @@
-import { Prisma } from '@prisma/client';
 import {
+  BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
-  ConflictException,
-  BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from '../../database/prisma.service';
-import { TenantResolutionService } from '../../common/services/tenant-resolution.service';
-import { NotificationsService } from '../notifications/notifications.service';
 import {
-  ListClientsQueryDto,
-  UpdateClientProfileDto,
-  CreateSubscriptionPaymentDto,
-  ListPaymentsQueryDto,
-} from './dto/platform-admin.dto';
-import {
+  BillingCycle,
   PaymentReviewStatus,
+  PlatformRole,
+  Prisma,
+  SubscriptionPaymentProvider,
   SubscriptionStatus,
   TenantStatus,
-  PlatformRole,
-  SubscriptionPaymentProvider,
 } from '@prisma/client';
 import { AuthenticatedUserContext } from '../../common/cls/cls.types';
+import { TenantResolutionService } from '../../common/services/tenant-resolution.service';
+import { PrismaService } from '../../database/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import {
+  CreateSubscriptionPaymentDto,
+  ListClientsQueryDto,
+  ListPaymentsQueryDto,
+  UpdateClientProfileDto,
+} from './dto/platform-admin.dto';
 
 @Injectable()
 export class PlatformAdminService {
@@ -32,28 +33,41 @@ export class PlatformAdminService {
   ) {}
 
   async getOverview() {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
     const [
       totalStores,
       activeStores,
       trialStores,
       pastDueStores,
       suspendedStores,
+      newStoresLast30Days,
       totalOwners,
       activeSubscriptions,
+      activeSubscriptionRows,
       pendingPayments,
       approvedPaymentsCount,
       totalCustomers,
       totalOrders,
       totalCollectedRevenueResult,
-      mrrResult,
+      recentCollectedRevenueResult,
     ] = await Promise.all([
       this.prisma.tenant.count(),
       this.prisma.tenant.count({ where: { status: TenantStatus.ACTIVE } }),
       this.prisma.tenant.count({ where: { status: TenantStatus.TRIAL } }),
       this.prisma.tenant.count({ where: { status: TenantStatus.PAST_DUE } }),
       this.prisma.tenant.count({ where: { status: TenantStatus.SUSPENDED } }),
+      this.prisma.tenant.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
       this.prisma.platformUser.count({ where: { role: PlatformRole.STORE_OWNER } }),
       this.prisma.subscription.count({ where: { status: SubscriptionStatus.ACTIVE } }),
+      this.prisma.subscription.findMany({
+        where: { status: SubscriptionStatus.ACTIVE },
+        select: {
+          billingCycle: true,
+          plan: { select: { priceMonthly: true, priceYearly: true } },
+        },
+      }),
       this.prisma.subscriptionPayment.count({
         where: { reviewStatus: PaymentReviewStatus.PENDING },
       }),
@@ -70,10 +84,24 @@ export class PlatformAdminService {
         _sum: { amount: true },
         where: {
           reviewStatus: PaymentReviewStatus.APPROVED,
-          paidAt: { gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) },
+          paidAt: { gte: thirtyDaysAgo },
         },
       }),
     ]);
+
+    const normalizedMrr = Number(
+      activeSubscriptionRows
+        .reduce((acc, sub) => {
+          const monthlyValue =
+            sub.billingCycle === BillingCycle.YEARLY
+              ? Number(sub.plan.priceYearly) / 12
+              : Number(sub.plan.priceMonthly);
+          return acc + monthlyValue;
+        }, 0)
+        .toFixed(2),
+    );
+
+    const recentCollectedRevenue = Number(recentCollectedRevenueResult._sum.amount ?? 0);
 
     return {
       totalStores,
@@ -81,9 +109,12 @@ export class PlatformAdminService {
       trialStores,
       pastDueStores,
       suspendedStores,
+      newStoresLast30Days,
+      storesAtRisk: pastDueStores + suspendedStores,
       totalOwners,
       activeSubscriptions,
-      mrr: Number(mrrResult._sum.amount ?? 0),
+      mrr: normalizedMrr,
+      recentCollectedRevenue,
       pendingPayments,
       approvedPaymentsCount,
       totalCollectedRevenue: Number(totalCollectedRevenueResult._sum.amount ?? 0),
@@ -99,37 +130,112 @@ export class PlatformAdminService {
   }
 
   async listClients(query: ListClientsQueryDto) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { search, tenantStatus, planCode, page = 1, limit = 20 } = query;
     const skip = (page - 1) * limit;
 
-    const where: Prisma.PlatformUserWhereInput = {
-      OR: [{ role: PlatformRole.STORE_OWNER }, { ownedTenants: { some: {} } }],
-    };
+    const andConditions: Prisma.PlatformUserWhereInput[] = [
+      {
+        OR: [{ role: PlatformRole.STORE_OWNER }, { ownedTenants: { some: {} } }],
+      },
+    ];
 
-    if (search) {
-      where.OR = [
-        { email: { contains: search, mode: 'insensitive' } },
-        { fullName: { contains: search, mode: 'insensitive' } },
-        { ownerProfile: { legalName: { contains: search, mode: 'insensitive' } } },
-      ];
+    if (search && search.trim()) {
+      const term = search.trim();
+      andConditions.push({
+        OR: [
+          { email: { contains: term, mode: 'insensitive' } },
+          { fullName: { contains: term, mode: 'insensitive' } },
+          { ownerProfile: { legalName: { contains: term, mode: 'insensitive' } } },
+          { ownerProfile: { taxId: { contains: term, mode: 'insensitive' } } },
+          { ownedTenants: { some: { name: { contains: term, mode: 'insensitive' } } } },
+          { ownedTenants: { some: { slug: { contains: term, mode: 'insensitive' } } } },
+        ],
+      });
     }
 
-    // Complex tenant filters might need more specific Prisma queries.
-    // For now, simplify based on available relations.
+    if (tenantStatus || planCode) {
+      const tenantFilter: Prisma.TenantWhereInput = {};
+      if (tenantStatus) {
+        tenantFilter.status = tenantStatus;
+      }
+      if (planCode && planCode.trim()) {
+        tenantFilter.subscription = {
+          plan: { code: planCode.trim().toUpperCase() },
+        };
+      }
+      andConditions.push({
+        ownedTenants: { some: tenantFilter },
+      });
+    }
 
-    const [items, total] = await Promise.all([
+    const where: Prisma.PlatformUserWhereInput = { AND: andConditions };
+
+    const [rawItems, total] = await Promise.all([
       this.prisma.platformUser.findMany({
         where,
         skip,
         take: limit,
-        include: {
+        orderBy: { createdAt: 'desc' },
+        select: {
+          id: true,
+          email: true,
+          fullName: true,
+          avatarUrl: true,
+          role: true,
+          isActive: true,
+          emailVerifiedAt: true,
+          lastLoginAt: true,
+          createdAt: true,
+          updatedAt: true,
           ownerProfile: true,
-          ownedTenants: { include: { subscription: { include: { plan: true } } } },
+          ownedTenants: {
+            include: {
+              subscription: {
+                include: {
+                  plan: true,
+                  payments: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 3,
+                  },
+                },
+              },
+              _count: {
+                select: {
+                  products: true,
+                  members: true,
+                  orders: true,
+                  customers: true,
+                },
+              },
+            },
+          },
         },
       }),
       this.prisma.platformUser.count({ where }),
     ]);
+
+    const items = rawItems.map((client) => ({
+      ...client,
+      ownedTenants: client.ownedTenants.map((tenant) => {
+        const maxProducts = tenant.subscription?.plan.maxProducts ?? 0;
+        const maxStaff = tenant.subscription?.plan.maxStaff ?? 0;
+        const productsUsed = tenant._count.products;
+        const staffUsed = tenant._count.members;
+        return {
+          ...tenant,
+          usage: {
+            productsUsed,
+            maxProducts,
+            productsUsagePercent:
+              maxProducts > 0 ? Math.min(100, Math.round((productsUsed / maxProducts) * 100)) : 0,
+            staffUsed,
+            maxStaff,
+            staffUsagePercent:
+              maxStaff > 0 ? Math.min(100, Math.round((staffUsed / maxStaff) * 100)) : 0,
+          },
+        };
+      }),
+    }));
 
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
   }
@@ -137,18 +243,79 @@ export class PlatformAdminService {
   async getClientDetail(ownerId: string) {
     const client = await this.prisma.platformUser.findUnique({
       where: { id: ownerId },
-      include: {
+      select: {
+        id: true,
+        email: true,
+        fullName: true,
+        avatarUrl: true,
+        role: true,
+        isActive: true,
+        emailVerifiedAt: true,
+        lastLoginAt: true,
+        createdAt: true,
+        updatedAt: true,
         ownerProfile: true,
-        ownedTenants: { include: { subscription: { include: { plan: true } } } },
+        ownedTenants: {
+          include: {
+            customDomains: true,
+            subscription: {
+              include: {
+                plan: true,
+                payments: {
+                  orderBy: { createdAt: 'desc' },
+                  take: 20,
+                },
+              },
+            },
+            _count: {
+              select: {
+                products: true,
+                members: true,
+                orders: true,
+                customers: true,
+              },
+            },
+          },
+        },
       },
     });
 
     if (!client) throw new NotFoundException('Cliente no encontrado.');
-    return client;
+
+    return {
+      ...client,
+      ownedTenants: client.ownedTenants.map((tenant) => {
+        const maxProducts = tenant.subscription?.plan.maxProducts ?? 0;
+        const maxStaff = tenant.subscription?.plan.maxStaff ?? 0;
+        const productsUsed = tenant._count.products;
+        const staffUsed = tenant._count.members;
+        return {
+          ...tenant,
+          usage: {
+            productsUsed,
+            maxProducts,
+            productsUsagePercent:
+              maxProducts > 0 ? Math.min(100, Math.round((productsUsed / maxProducts) * 100)) : 0,
+            staffUsed,
+            maxStaff,
+            staffUsagePercent:
+              maxStaff > 0 ? Math.min(100, Math.round((staffUsed / maxStaff) * 100)) : 0,
+          },
+        };
+      }),
+    };
   }
 
   async updateClientProfile(ownerId: string, dto: UpdateClientProfileDto) {
-    return await this.prisma.$transaction(async (tx) => {
+    const existing = await this.prisma.platformUser.findUnique({
+      where: { id: ownerId },
+      select: { id: true },
+    });
+    if (!existing) {
+      throw new NotFoundException('Cliente no encontrado.');
+    }
+
+    await this.prisma.$transaction(async (tx) => {
       await tx.platformUser.update({
         where: { id: ownerId },
         data: {
@@ -176,7 +343,7 @@ export class PlatformAdminService {
           legalName: dto.legalName ?? '',
           taxId: dto.taxId ?? '',
           phoneWhatsapp: dto.phoneWhatsapp ?? '',
-          country: dto.country ?? '',
+          country: dto.country ?? 'LATAM',
           city: dto.city ?? '',
           fiscalAddress: dto.fiscalAddress ?? '',
           businessCategory: dto.businessCategory ?? '',
@@ -185,9 +352,37 @@ export class PlatformAdminService {
           onboardingCompleted: dto.onboardingCompleted ?? false,
         },
       });
-
-      return await this.getClientDetail(ownerId);
     });
+
+    return this.getClientDetail(ownerId);
+  }
+
+  async appendClientNote(ownerId: string, adminUser: AuthenticatedUserContext, note: string) {
+    const client = await this.prisma.platformUser.findUnique({
+      where: { id: ownerId },
+      include: { ownerProfile: true },
+    });
+    if (!client) {
+      throw new NotFoundException('Cliente no encontrado.');
+    }
+
+    const timestamp = new Date().toISOString().replace('T', ' ').slice(0, 16);
+    const entry = `[${timestamp} UTC | ${adminUser.email}] ${note.trim()}`;
+    const currentNotes = client.ownerProfile?.internalAdminNotes?.trim();
+    const combinedNotes = currentNotes ? `${currentNotes}\n${entry}` : entry;
+
+    await this.prisma.tenantOwnerProfile.upsert({
+      where: { userId: ownerId },
+      create: {
+        userId: ownerId,
+        internalAdminNotes: combinedNotes,
+      },
+      update: {
+        internalAdminNotes: combinedNotes,
+      },
+    });
+
+    return this.getClientDetail(ownerId);
   }
 
   async updateTenantStatus(tenantId: string, status: TenantStatus) {
@@ -223,7 +418,19 @@ export class PlatformAdminService {
         where,
         skip,
         take: limit,
-        include: { subscription: { include: { tenant: true } } },
+        orderBy: { createdAt: 'desc' },
+        include: {
+          subscription: {
+            include: {
+              plan: true,
+              tenant: {
+                include: {
+                  owner: { select: { id: true, email: true, fullName: true } },
+                },
+              },
+            },
+          },
+        },
       }),
       this.prisma.subscriptionPayment.count({ where }),
     ]);
@@ -259,16 +466,24 @@ export class PlatformAdminService {
     paymentId: string,
     adminUser: AuthenticatedUserContext,
     reviewStatus: PaymentReviewStatus,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     note?: string,
   ) {
-    return await this.prisma.$transaction(async (tx) => {
+    if (reviewStatus === PaymentReviewStatus.PENDING) {
+      throw new BadRequestException('El estado de revisión debe ser APPROVED o REJECTED.');
+    }
+
+    const result = await this.prisma.$transaction(async (tx) => {
       const payment = await tx.subscriptionPayment.findUnique({
         where: { id: paymentId },
         include: {
           subscription: {
             include: {
-              tenant: { include: { customDomains: true } },
+              tenant: {
+                include: {
+                  customDomains: true,
+                  owner: { select: { id: true, email: true, fullName: true } },
+                },
+              },
               plan: true,
             },
           },
@@ -283,23 +498,31 @@ export class PlatformAdminService {
         throw new ConflictException('Este pago ya ha sido procesado.');
       }
 
+      const now = new Date();
       const updatedPayment = await tx.subscriptionPayment.update({
         where: { id: paymentId },
         data: {
           reviewStatus,
           reviewedByUserId: adminUser.sub,
-          paidAt: reviewStatus === PaymentReviewStatus.APPROVED ? new Date() : null,
+          paidAt: reviewStatus === PaymentReviewStatus.APPROVED ? now : null,
         },
       });
 
       if (reviewStatus === PaymentReviewStatus.APPROVED) {
+        const nextPeriodEnd = new Date(now);
+        nextPeriodEnd.setMonth(
+          nextPeriodEnd.getMonth() +
+            (payment.subscription.billingCycle === BillingCycle.YEARLY ? 12 : 1),
+        );
+
         await tx.subscription.update({
           where: { id: payment.subscriptionId },
           data: {
             status: SubscriptionStatus.ACTIVE,
-            currentPeriodStart: new Date(),
-            currentPeriodEnd: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+            currentPeriodStart: now,
+            currentPeriodEnd: nextPeriodEnd,
             gracePeriodEndsAt: null,
+            cancelAtPeriodEnd: false,
           },
         });
 
@@ -307,25 +530,45 @@ export class PlatformAdminService {
           where: { id: payment.subscription.tenantId },
           data: { status: TenantStatus.ACTIVE },
         });
-
-        const hostnames = payment.subscription.tenant.customDomains.map((d) => d.hostname);
-        await this.tenantResolutionService.invalidateTenantCache(
-          payment.subscription.tenant.slug,
-          hostnames,
-        );
-
-        await this.notificationsService.sendSubscriptionPaymentApproved({
-          to: payment.subscription.tenant.contactEmail ?? '',
-          ownerName: 'Owner', // Should fetch owner name
-          storeName: payment.subscription.tenant.name,
-          planName: payment.subscription.plan.name,
-          amount: payment.amount.toString(),
-          currency: payment.currency,
-          externalReference: payment.externalReference ?? undefined,
-        });
       }
 
-      return updatedPayment;
+      return { updatedPayment, payment };
     });
+
+    const { updatedPayment, payment } = result;
+    const recipientEmail =
+      payment.subscription.tenant.contactEmail || payment.subscription.tenant.owner.email;
+    const ownerName = payment.subscription.tenant.owner.fullName;
+
+    if (reviewStatus === PaymentReviewStatus.APPROVED) {
+      const hostnames = payment.subscription.tenant.customDomains.map((d) => d.hostname);
+      await this.tenantResolutionService.invalidateTenantCache(
+        payment.subscription.tenant.slug,
+        hostnames,
+      );
+
+      await this.notificationsService.sendSubscriptionPaymentApproved({
+        to: recipientEmail,
+        ownerName,
+        storeName: payment.subscription.tenant.name,
+        planName: payment.subscription.plan.name,
+        amount: payment.amount.toString(),
+        currency: payment.currency,
+        externalReference: payment.externalReference ?? undefined,
+      });
+    } else if (reviewStatus === PaymentReviewStatus.REJECTED) {
+      await this.notificationsService.sendSubscriptionPaymentRejected({
+        to: recipientEmail,
+        ownerName,
+        storeName: payment.subscription.tenant.name,
+        planName: payment.subscription.plan.name,
+        amount: payment.amount.toString(),
+        currency: payment.currency,
+        reason: note,
+        externalReference: payment.externalReference ?? undefined,
+      });
+    }
+
+    return updatedPayment;
   }
 }

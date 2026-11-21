@@ -36,6 +36,26 @@ export class ResolveTenantQueryDto {
   slug?: string;
 }
 
+export class CheckSlugQueryDto {
+  @ApiProperty({ example: 'mi-tienda-b2b' })
+  @Transform(trimString)
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(63)
+  slug!: string;
+}
+
+export class SlugAvailabilityDto {
+  @ApiProperty({ example: 'mi-tienda-b2b' })
+  slug!: string;
+
+  @ApiProperty({ example: true })
+  available!: boolean;
+
+  @ApiPropertyOptional({ example: 'Subdominio disponible.', nullable: true })
+  reason?: string | null;
+}
+
 export class CreateTenantDto {
   @ApiProperty({ example: 'Urban Threads Studio' })
   @Transform(trimString)
