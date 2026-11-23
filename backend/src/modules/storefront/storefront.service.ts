@@ -77,7 +77,17 @@ export class StorefrontService {
     if (categoryId) where.categoryId = categoryId;
 
     const [items, total] = await Promise.all([
-      db.product.findMany({ where, skip, take: limit, include: { variants: true } }),
+      db.product.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          category: { select: { id: true, name: true, slug: true } },
+          images: { orderBy: { sortOrder: 'asc' } },
+          variants: { where: { isActive: true }, orderBy: { createdAt: 'asc' } },
+          wholesaleTiers: { orderBy: { minQuantity: 'asc' } },
+        },
+      }),
       db.product.count({ where }),
     ]);
     return { items, total, page, limit, totalPages: Math.ceil(total / limit) };
@@ -87,7 +97,12 @@ export class StorefrontService {
     const db = this.prisma.forTenant(tenantId);
     const product = await db.product.findFirst({
       where: { tenantId, slug, isActive: true },
-      include: { variants: true, category: true },
+      include: {
+        category: true,
+        images: { orderBy: { sortOrder: 'asc' } },
+        variants: { where: { isActive: true }, orderBy: { createdAt: 'asc' } },
+        wholesaleTiers: { orderBy: { minQuantity: 'asc' } },
+      },
     });
     if (!product) throw new NotFoundException('Producto no encontrado.');
     return product;
