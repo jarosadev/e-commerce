@@ -36,6 +36,7 @@ import {
   StoreThemeDto,
   TenantDetailDto,
   UpdateStoreThemeDto,
+  UpdateTenantSettingsDto,
 } from './dto/tenant.dto';
 import { TenantsService } from './tenants.service';
 
@@ -121,5 +122,24 @@ export class TenantsController {
     @Body() dto: UpdateStoreThemeDto,
   ): Promise<StoreThemeDto> {
     return this.tenantsService.updateCurrentTheme(tenant, user, dto);
+  }
+
+  @Patch('current/settings')
+  @RequireTenant()
+  @Roles(PlatformRole.STORE_OWNER, PlatformRole.STORE_STAFF, PlatformRole.SUPER_ADMIN)
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth('access-token')
+  @ApiCookieAuth('access_token')
+  @ApiOperation({
+    summary:
+      'Actualiza la configuración operativa y reglas B2B de la tienda (WhatsApp, moneda, mínimos mayoristas)',
+  })
+  @ApiOkResponse({ type: TenantDetailDto })
+  updateCurrentSettings(
+    @CurrentTenant() tenant: ResolvedTenantContext,
+    @CurrentUser() user: AuthenticatedUserContext,
+    @Body() dto: UpdateTenantSettingsDto,
+  ): Promise<TenantDetailDto> {
+    return this.tenantsService.updateCurrentSettings(tenant, user, dto);
   }
 }

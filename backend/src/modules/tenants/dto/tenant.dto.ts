@@ -405,3 +405,58 @@ export class TenantDetailDto {
   @ApiProperty()
   updatedAt!: string;
 }
+
+export class UpdateTenantSettingsDto {
+  @ApiPropertyOptional({ example: 'Urban Threads Studio' })
+  @IsOptional()
+  @Transform(trimString)
+  @IsString()
+  @MinLength(2)
+  @MaxLength(120)
+  name?: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @Transform(trimString)
+  @IsString()
+  @MaxLength(1000)
+  description?: string | null;
+
+  @ApiPropertyOptional({ example: 'USD' })
+  @IsOptional()
+  @Transform(trimUpper)
+  @IsString()
+  @Length(3, 3)
+  currency?: string;
+
+  @ApiPropertyOptional({ example: '+5491145550199', nullable: true })
+  @IsOptional()
+  @Transform(trimString)
+  @IsString()
+  @MaxLength(30)
+  whatsappSalesNumber?: string | null;
+
+  @ApiPropertyOptional({ example: 'ventas@tienda.com', nullable: true })
+  @IsOptional()
+  @Transform(trimString)
+  @IsEmail()
+  contactEmail?: string | null;
+
+  @ApiPropertyOptional({ example: 150, nullable: true })
+  @IsOptional()
+  @IsNumber()
+  @Min(0)
+  minWholesaleAmount?: number | null;
+
+  @ApiPropertyOptional({ example: 6, nullable: true })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  minWholesaleQty?: number | null;
+
+  @ApiPropertyOptional({ example: 120 })
+  @IsOptional()
+  @IsInt()
+  @Min(15)
+  stockReservationMins?: number;
+}
