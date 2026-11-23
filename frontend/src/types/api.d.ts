@@ -670,6 +670,322 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/storage/presign-upload": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera una Presigned PUT URL con validación MIME/tamaño (catálogo/branding públicos o comprobante privado) */
+        post: operations["StorageController_presignUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/storage/presign-download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera una Presigned GET URL temporal (5 min) para visualizar comprobantes privados de la tienda */
+        post: operations["StorageController_presignDownload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista categorías de la tienda actual ordenadas por sortOrder */
+        get: operations["CatalogController_listCategories"];
+        put?: never;
+        /** Crea una categoría o subcategoría en la tienda actual */
+        post: operations["CatalogController_createCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/categories/{categoryId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Elimina una categoría desvinculando sus productos y subcategorías */
+        delete: operations["CatalogController_deleteCategory"];
+        options?: never;
+        head?: never;
+        /** Actualiza una categoría de la tienda actual */
+        patch: operations["CatalogController_updateCategory"];
+        trace?: never;
+    };
+    "/api/v1/catalog/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista productos del catálogo con variantes, galería y tramos B2B */
+        get: operations["CatalogController_listProducts"];
+        put?: never;
+        /** Crea un producto (validando límite de productos del plan SaaS) con galería/variantes/B2B */
+        post: operations["CatalogController_createProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{productId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Obtiene el detalle completo de un producto de la tienda */
+        get: operations["CatalogController_getProductById"];
+        put?: never;
+        post?: never;
+        /** Elimina un producto o lo archiva si ya posee órdenes históricas asociadas */
+        delete: operations["CatalogController_deleteProduct"];
+        options?: never;
+        head?: never;
+        /** Actualiza datos del producto y/o reemplaza el orden de su galería */
+        patch: operations["CatalogController_updateProduct"];
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{productId}/variants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Crea una variante individual (talla/color/SKU/stock) en un producto */
+        post: operations["CatalogController_createVariant"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{productId}/variants/matrix": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Genera automáticamente la matriz cartesiana de variantes (ej. Tallas × Colores) */
+        post: operations["CatalogController_generateVariantMatrix"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/variants/{variantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Elimina o archiva una variante de producto */
+        delete: operations["CatalogController_deleteVariant"];
+        options?: never;
+        head?: never;
+        /** Actualiza precios, SKU, atributos o umbral de alerta de una variante */
+        patch: operations["CatalogController_updateVariant"];
+        trace?: never;
+    };
+    "/api/v1/catalog/variants/{variantId}/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Ajusta el stock físico atómicamente (SET o DELTA) protegiendo el stock reservado */
+        patch: operations["CatalogController_adjustVariantStock"];
+        trace?: never;
+    };
+    "/api/v1/catalog/inventory/low-stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista alertas de variantes con stock disponible menor o igual a su umbral mínimo */
+        get: operations["CatalogController_getLowStockAlerts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/catalog/products/{productId}/wholesale-tiers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Configura/reemplaza la tabla de precios mayoristas escalonados por cantidad validando rangos */
+        put: operations["CatalogController_replaceWholesaleTiers"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/store-ops/payment-methods": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista los métodos de pago manuales configurados por la tienda */
+        get: operations["StoreOpsController_listPaymentMethods"];
+        put?: never;
+        /** Crea un método de pago manual (Transferencia, QR, Contraentrega, B2B) */
+        post: operations["StoreOpsController_createPaymentMethod"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/store-ops/payment-methods/{methodId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Elimina un método de pago manual de la tienda */
+        delete: operations["StoreOpsController_deletePaymentMethod"];
+        options?: never;
+        head?: never;
+        /** Actualiza un método de pago manual de la tienda */
+        patch: operations["StoreOpsController_updatePaymentMethod"];
+        trace?: never;
+    };
+    "/api/v1/store-ops/shipping-zones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista zonas de envío, montos de envío gratis y sucursales de retiro */
+        get: operations["StoreOpsController_listShippingZones"];
+        put?: never;
+        /** Crea una zona de envío o punto de retiro en local */
+        post: operations["StoreOpsController_createShippingZone"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/store-ops/shipping-zones/{zoneId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Elimina una zona de envío de la tienda */
+        delete: operations["StoreOpsController_deleteShippingZone"];
+        options?: never;
+        head?: never;
+        /** Actualiza una zona de envío o sucursal de retiro */
+        patch: operations["StoreOpsController_updateShippingZone"];
+        trace?: never;
+    };
+    "/api/v1/store-ops/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Lista los compradores registrados de la tienda con filtro RETAIL/WHOLESALE_B2B */
+        get: operations["StoreOpsController_listStoreCustomers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/store-ops/customers/{customerId}/tier": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Etiqueta o promueve un comprador entre RETAIL y WHOLESALE_B2B */
+        patch: operations["StoreOpsController_updateStoreCustomerTier"];
+        trace?: never;
+    };
     "/api/v1/storefront/config": {
         parameters: {
             query?: never;
@@ -834,6 +1150,23 @@ export interface paths {
         head?: never;
         /** Actualiza el StoreTheme de la tienda actual e invalida caché Redis */
         patch: operations["TenantsController_updateCurrentTheme"];
+        trace?: never;
+    };
+    "/api/v1/tenants/current/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Actualiza la configuración operativa y reglas B2B de la tienda (WhatsApp, moneda, mínimos mayoristas) */
+        patch: operations["TenantsController_updateCurrentSettings"];
         trace?: never;
     };
 }
@@ -1240,6 +1573,278 @@ export interface components {
              */
             data: Record<string, never>;
         };
+        PresignUploadRequestDto: {
+            /**
+             * @example catalog
+             * @enum {string}
+             */
+            scope: "catalog" | "branding" | "receipt";
+            /** @example image/webp */
+            contentType: string;
+            /**
+             * @description Tamaño del archivo en bytes
+             * @example 420500
+             */
+            sizeBytes: number;
+            /** @example hoodie-negro.webp */
+            originalFilename?: string;
+        };
+        PresignUploadResponseDto: {
+            uploadUrl: string;
+            objectKey: string;
+            bucket: string;
+            isPrivate: boolean;
+            publicUrl?: Record<string, never> | null;
+            contentType: string;
+            expiresInSeconds: number;
+        };
+        PresignDownloadRequestDto: {
+            /** @example tenants/uuid/receipts/abc.pdf */
+            objectKey: string;
+        };
+        PresignDownloadResponseDto: {
+            downloadUrl: string;
+            objectKey: string;
+            expiresInSeconds: number;
+        };
+        CreateCategoryDto: {
+            /** @example Hoodies & Buzos */
+            name: string;
+            /** @example hoodies-buzos */
+            slug?: string;
+            parentId?: Record<string, never>;
+            description?: Record<string, never>;
+            imageUrl?: Record<string, never>;
+            /** @default 0 */
+            sortOrder: number;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateCategoryDto: {
+            name?: string;
+            slug?: string;
+            parentId?: Record<string, never> | null;
+            description?: Record<string, never> | null;
+            imageUrl?: Record<string, never> | null;
+            sortOrder?: number;
+            isActive?: boolean;
+        };
+        ProductImageInputDto: {
+            /** @example http://localhost:9000/catalog-public/tenants/.../img.webp */
+            url: string;
+            /** @example Vista frontal Hoodie */
+            altText?: Record<string, never>;
+            /** @default 0 */
+            sortOrder: number;
+        };
+        CreateVariantDto: {
+            /** @example UT-HD-BLK-XL */
+            sku: string;
+            /** @example Talla XL · Negro Ónix */
+            title: string;
+            /**
+             * @example {
+             *       "talla": "XL",
+             *       "color": "Negro Ónix"
+             *     }
+             */
+            attributes: Record<string, never>;
+            /** @example 42 */
+            retailPrice: number;
+            /** @example 52 */
+            compareAtPrice?: Record<string, never> | null;
+            /**
+             * @default 0
+             * @example 40
+             */
+            stockOnHand: number;
+            /**
+             * @default 5
+             * @example 5
+             */
+            lowStockThreshold: number;
+            /** @example 650 */
+            weightGrams?: Record<string, never> | null;
+            /** @default true */
+            isActive: boolean;
+        };
+        WholesaleTierInputDto: {
+            /** @example 6 */
+            minQuantity: number;
+            /** @example 11 */
+            maxQuantity?: Record<string, never> | null;
+            /** @example 32.5 */
+            unitPrice: number;
+            /** @example Media Docena Mayorista */
+            label?: Record<string, never> | null;
+        };
+        CreateProductDto: {
+            /** @example Remera Oversize Algodón 240gsm */
+            name: string;
+            /** @example remera-oversize-algodon-240gsm */
+            slug?: string;
+            categoryId?: Record<string, never> | null;
+            shortDescription?: Record<string, never> | null;
+            description?: Record<string, never> | null;
+            brand?: Record<string, never> | null;
+            /** @default false */
+            isWholesaleOnly: boolean;
+            /** @default 1 */
+            minOrderQty: number;
+            /** @default false */
+            isFeatured: boolean;
+            /** @default true */
+            isActive: boolean;
+            images?: components["schemas"]["ProductImageInputDto"][];
+            variants?: components["schemas"]["CreateVariantDto"][];
+            wholesaleTiers?: components["schemas"]["WholesaleTierInputDto"][];
+        };
+        UpdateProductDto: {
+            name?: string;
+            slug?: string;
+            categoryId?: Record<string, never> | null;
+            shortDescription?: Record<string, never> | null;
+            description?: Record<string, never> | null;
+            brand?: Record<string, never> | null;
+            isWholesaleOnly?: boolean;
+            minOrderQty?: number;
+            isFeatured?: boolean;
+            isActive?: boolean;
+            images?: components["schemas"]["ProductImageInputDto"][];
+        };
+        VariantMatrixAxisDto: {
+            /** @example talla */
+            name: string;
+            /**
+             * @example [
+             *       "S",
+             *       "M",
+             *       "L"
+             *     ]
+             */
+            values: string[];
+        };
+        GenerateVariantMatrixDto: {
+            axes: components["schemas"]["VariantMatrixAxisDto"][];
+            /** @example REM-BOX */
+            skuPrefix: string;
+            /** @example 25 */
+            retailPrice: number;
+            /** @example 32 */
+            compareAtPrice?: Record<string, never> | null;
+            /**
+             * @default 0
+             * @example 20
+             */
+            stockOnHand: number;
+            /**
+             * @default 5
+             * @example 5
+             */
+            lowStockThreshold: number;
+            /** @example 350 */
+            weightGrams?: Record<string, never> | null;
+        };
+        UpdateVariantDto: {
+            sku?: string;
+            title?: string;
+            attributes?: Record<string, never>;
+            retailPrice?: number;
+            compareAtPrice?: Record<string, never> | null;
+            lowStockThreshold?: number;
+            weightGrams?: Record<string, never> | null;
+            isActive?: boolean;
+        };
+        AdjustStockDto: {
+            /**
+             * @example DELTA
+             * @enum {string}
+             */
+            mode: "SET" | "DELTA";
+            /**
+             * @description Cantidad final (SET) o variación +/- (DELTA)
+             * @example 10
+             */
+            quantity: number;
+        };
+        ReplaceWholesaleTiersDto: {
+            tiers: components["schemas"]["WholesaleTierInputDto"][];
+        };
+        CreatePaymentMethodDto: {
+            /**
+             * @example BANK_TRANSFER
+             * @enum {string}
+             */
+            type: "BANK_TRANSFER" | "QR_CODE" | "MOBILE_PAYMENT" | "CASH_ON_DELIVERY" | "WHATSAPP_B2B";
+            /** @example Transferencia Banco Nación */
+            title: string;
+            instructions?: Record<string, never> | null;
+            /**
+             * @example {
+             *       "banco": "Banco Nación",
+             *       "alias": "MI.TIENDA",
+             *       "titular": "Mi Tienda SRL"
+             *     }
+             */
+            accountDetailsJson?: Record<string, never> | null;
+            qrImageUrl?: Record<string, never> | null;
+            /** @default true */
+            requiresReceipt: boolean;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdatePaymentMethodDto: {
+            /** @enum {string} */
+            type?: "BANK_TRANSFER" | "QR_CODE" | "MOBILE_PAYMENT" | "CASH_ON_DELIVERY" | "WHATSAPP_B2B";
+            title?: string;
+            instructions?: Record<string, never> | null;
+            accountDetailsJson?: Record<string, never> | null;
+            qrImageUrl?: Record<string, never> | null;
+            requiresReceipt?: boolean;
+            isActive?: boolean;
+        };
+        CreateShippingZoneDto: {
+            /** @example Envío Moto Express AMBA */
+            name: string;
+            /**
+             * @example [
+             *       "CABA",
+             *       "Vicente López",
+             *       "San Isidro"
+             *     ]
+             */
+            cities: string[];
+            /** @example 6.5 */
+            flatRate: number;
+            /** @example 100 */
+            freeShippingThreshold?: Record<string, never> | null;
+            /** @default false */
+            isLocalPickup: boolean;
+            pickupAddress?: Record<string, never> | null;
+            /** @example 24 a 48 hs hábiles */
+            estimatedDays?: Record<string, never> | null;
+            /** @default true */
+            isActive: boolean;
+        };
+        UpdateShippingZoneDto: {
+            name?: string;
+            cities?: string[];
+            flatRate?: number;
+            freeShippingThreshold?: Record<string, never> | null;
+            isLocalPickup?: boolean;
+            pickupAddress?: Record<string, never> | null;
+            estimatedDays?: Record<string, never> | null;
+            isActive?: boolean;
+        };
+        UpdateStoreCustomerTierDto: {
+            /**
+             * @example WHOLESALE_B2B
+             * @enum {string}
+             */
+            customerTier: "RETAIL" | "WHOLESALE_B2B";
+            phone?: Record<string, never> | null;
+            taxId?: Record<string, never> | null;
+        };
         ValidateCouponDto: {
             /** @example BIENVENIDA10 */
             code: string;
@@ -1373,6 +1978,23 @@ export interface components {
             /** @example 10% OFF en compras mayores a $150 */
             announcementText?: string | null;
             heroBanners?: Record<string, never>[] | null;
+        };
+        UpdateTenantSettingsDto: {
+            /** @example Urban Threads Studio */
+            name?: string;
+            description?: Record<string, never> | null;
+            /** @example USD */
+            currency?: string;
+            /** @example +5491145550199 */
+            whatsappSalesNumber?: Record<string, never> | null;
+            /** @example ventas@tienda.com */
+            contactEmail?: Record<string, never> | null;
+            /** @example 150 */
+            minWholesaleAmount?: Record<string, never> | null;
+            /** @example 6 */
+            minWholesaleQty?: Record<string, never> | null;
+            /** @example 120 */
+            stockReservationMins?: number;
         };
     };
     responses: never;
@@ -2452,6 +3074,678 @@ export interface operations {
             };
         };
     };
+    StorageController_presignUpload: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresignUploadRequestDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PresignUploadResponseDto"];
+                };
+            };
+        };
+    };
+    StorageController_presignDownload: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PresignDownloadRequestDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PresignDownloadResponseDto"];
+                };
+            };
+        };
+    };
+    CatalogController_listCategories: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_createCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCategoryDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_deleteCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                categoryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_updateCategory: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                categoryId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCategoryDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_listProducts: {
+        parameters: {
+            query?: {
+                search?: string;
+                categoryId?: string;
+                isActive?: boolean;
+                isWholesaleOnly?: boolean;
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_createProduct: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_getProductById: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_deleteProduct: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_updateProduct: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProductDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_createVariant: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateVariantDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_generateVariantMatrix: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateVariantMatrixDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_deleteVariant: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_updateVariant: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVariantDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_adjustVariantStock: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustStockDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_getLowStockAlerts: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    CatalogController_replaceWholesaleTiers: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                productId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReplaceWholesaleTiersDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_listPaymentMethods: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_createPaymentMethod: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreatePaymentMethodDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_deletePaymentMethod: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                methodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_updatePaymentMethod: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                methodId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdatePaymentMethodDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_listShippingZones: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_createShippingZone: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateShippingZoneDto"];
+            };
+        };
+        responses: {
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_deleteShippingZone: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                zoneId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_updateShippingZone: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                zoneId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateShippingZoneDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_listStoreCustomers: {
+        parameters: {
+            query?: {
+                search?: string;
+                customerTier?: "RETAIL" | "WHOLESALE_B2B";
+                page?: number;
+                limit?: number;
+            };
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    StoreOpsController_updateStoreCustomerTier: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path: {
+                customerId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateStoreCustomerTierDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     StorefrontController_getConfig: {
         parameters: {
             query?: never;
@@ -2714,6 +4008,32 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StoreThemeDto"];
+                };
+            };
+        };
+    };
+    TenantsController_updateCurrentSettings: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000) */
+                "x-tenant-host"?: string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateTenantSettingsDto"];
+            };
+        };
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TenantDetailDto"];
                 };
             };
         };

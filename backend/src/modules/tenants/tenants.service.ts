@@ -30,6 +30,7 @@ import {
   StoreThemeDto,
   TenantDetailDto,
   UpdateStoreThemeDto,
+  UpdateTenantSettingsDto,
 } from './dto/tenant.dto';
 import { RESERVED_TENANT_SLUGS, TENANT_SLUG_REGEX, TRIAL_DAYS } from './tenants.constants';
 
@@ -367,6 +368,46 @@ export class TenantsService {
     );
 
     return this.serializeTheme(updated);
+  }
+
+  async updateCurrentSettings(
+    tenant: ResolvedTenantContext,
+    user: AuthenticatedUserContext,
+    dto: UpdateTenantSettingsDto,
+  ): Promise<TenantDetailDto> {
+    await this.assertTenantAccess(tenant, user, [TenantMemberRole.OWNER, TenantMemberRole.ADMIN]);
+
+    const updated = await this.prisma.tenant.update({
+      where: { id: tenant.id },
+      data: {
+        ...(dto.name !== undefined ? { name: dto.name } : {}),
+        ...(dto.description !== undefined ? { description: dto.description } : {}),
+        ...(dto.currency !== undefined ? { currency: dto.currency } : {}),
+        ...(dto.whatsappSalesNumber !== undefined
+          ? { whatsappSalesNumber: dto.whatsappSalesNumber }
+          : {}),
+        ...(dto.contactEmail !== undefined ? { contactEmail: dto.contactEmail } : {}),
+        ...(dto.minWholesaleAmount !== undefined
+          ? { minWholesaleAmount: dto.minWholesaleAmount }
+          : {}),
+        ...(dto.minWholesaleQty !== undefined ? { minWholesaleQty: dto.minWholesaleQty } : {}),
+        ...(dto.stockReservationMins !== undefined
+          ? { stockReservationMins: dto.stockReservationMins }
+          : {}),
+      },
+      include: {
+        theme: true,
+        customDomains: { select: { hostname: true } },
+        subscription: { include: { plan: true } },
+      },
+    });
+
+    await this.tenantResolutionService.invalidateTenantCache(
+      updated.slug,
+      updated.customDomains.map((d) => d.hostname),
+    );
+
+    return this.serializeTenantDetail(updated);
   }
 
   private async assertTenantAccess(

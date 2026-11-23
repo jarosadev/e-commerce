@@ -1990,6 +1990,1300 @@
         ]
       }
     },
+    "/api/v1/storage/presign-upload": {
+      "post": {
+        "operationId": "StorageController_presignUpload",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignUploadRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignUploadResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Genera una Presigned PUT URL con validación MIME/tamaño (catálogo/branding públicos o comprobante privado)",
+        "tags": [
+          "Storage (S3 / R2 Presigned URLs)"
+        ]
+      }
+    },
+    "/api/v1/storage/presign-download": {
+      "post": {
+        "operationId": "StorageController_presignDownload",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PresignDownloadRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresignDownloadResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Genera una Presigned GET URL temporal (5 min) para visualizar comprobantes privados de la tienda",
+        "tags": [
+          "Storage (S3 / R2 Presigned URLs)"
+        ]
+      }
+    },
+    "/api/v1/catalog/categories": {
+      "get": {
+        "operationId": "CatalogController_listCategories",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista categorías de la tienda actual ordenadas por sortOrder",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogController_createCategory",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una categoría o subcategoría en la tienda actual",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/categories/{categoryId}": {
+      "patch": {
+        "operationId": "CatalogController_updateCategory",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza una categoría de la tienda actual",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "delete": {
+        "operationId": "CatalogController_deleteCategory",
+        "parameters": [
+          {
+            "name": "categoryId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Elimina una categoría desvinculando sus productos y subcategorías",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/products": {
+      "get": {
+        "operationId": "CatalogController_listProducts",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "isWholesaleOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista productos del catálogo con variantes, galería y tramos B2B",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "post": {
+        "operationId": "CatalogController_createProduct",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea un producto (validando límite de productos del plan SaaS) con galería/variantes/B2B",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{productId}": {
+      "get": {
+        "operationId": "CatalogController_getProductById",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Obtiene el detalle completo de un producto de la tienda",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "patch": {
+        "operationId": "CatalogController_updateProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateProductDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza datos del producto y/o reemplaza el orden de su galería",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "delete": {
+        "operationId": "CatalogController_deleteProduct",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Elimina un producto o lo archiva si ya posee órdenes históricas asociadas",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{productId}/variants": {
+      "post": {
+        "operationId": "CatalogController_createVariant",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateVariantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una variante individual (talla/color/SKU/stock) en un producto",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{productId}/variants/matrix": {
+      "post": {
+        "operationId": "CatalogController_generateVariantMatrix",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateVariantMatrixDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Genera automáticamente la matriz cartesiana de variantes (ej. Tallas × Colores)",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/variants/{variantId}": {
+      "patch": {
+        "operationId": "CatalogController_updateVariant",
+        "parameters": [
+          {
+            "name": "variantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateVariantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza precios, SKU, atributos o umbral de alerta de una variante",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      },
+      "delete": {
+        "operationId": "CatalogController_deleteVariant",
+        "parameters": [
+          {
+            "name": "variantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Elimina o archiva una variante de producto",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/variants/{variantId}/stock": {
+      "patch": {
+        "operationId": "CatalogController_adjustVariantStock",
+        "parameters": [
+          {
+            "name": "variantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdjustStockDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Ajusta el stock físico atómicamente (SET o DELTA) protegiendo el stock reservado",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/inventory/low-stock": {
+      "get": {
+        "operationId": "CatalogController_getLowStockAlerts",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista alertas de variantes con stock disponible menor o igual a su umbral mínimo",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/catalog/products/{productId}/wholesale-tiers": {
+      "put": {
+        "operationId": "CatalogController_replaceWholesaleTiers",
+        "parameters": [
+          {
+            "name": "productId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReplaceWholesaleTiersDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Configura/reemplaza la tabla de precios mayoristas escalonados por cantidad validando rangos",
+        "tags": [
+          "Catalog, Variants & Wholesale B2B"
+        ]
+      }
+    },
+    "/api/v1/store-ops/payment-methods": {
+      "get": {
+        "operationId": "StoreOpsController_listPaymentMethods",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista los métodos de pago manuales configurados por la tienda",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      },
+      "post": {
+        "operationId": "StoreOpsController_createPaymentMethod",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePaymentMethodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea un método de pago manual (Transferencia, QR, Contraentrega, B2B)",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
+    "/api/v1/store-ops/payment-methods/{methodId}": {
+      "patch": {
+        "operationId": "StoreOpsController_updatePaymentMethod",
+        "parameters": [
+          {
+            "name": "methodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePaymentMethodDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza un método de pago manual de la tienda",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      },
+      "delete": {
+        "operationId": "StoreOpsController_deletePaymentMethod",
+        "parameters": [
+          {
+            "name": "methodId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Elimina un método de pago manual de la tienda",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
+    "/api/v1/store-ops/shipping-zones": {
+      "get": {
+        "operationId": "StoreOpsController_listShippingZones",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista zonas de envío, montos de envío gratis y sucursales de retiro",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      },
+      "post": {
+        "operationId": "StoreOpsController_createShippingZone",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateShippingZoneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una zona de envío o punto de retiro en local",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
+    "/api/v1/store-ops/shipping-zones/{zoneId}": {
+      "patch": {
+        "operationId": "StoreOpsController_updateShippingZone",
+        "parameters": [
+          {
+            "name": "zoneId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateShippingZoneDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza una zona de envío o sucursal de retiro",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      },
+      "delete": {
+        "operationId": "StoreOpsController_deleteShippingZone",
+        "parameters": [
+          {
+            "name": "zoneId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Elimina una zona de envío de la tienda",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
+    "/api/v1/store-ops/customers": {
+      "get": {
+        "operationId": "StoreOpsController_listStoreCustomers",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "customerTier",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "RETAIL",
+                "WHOLESALE_B2B"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista los compradores registrados de la tienda con filtro RETAIL/WHOLESALE_B2B",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
+    "/api/v1/store-ops/customers/{customerId}/tier": {
+      "patch": {
+        "operationId": "StoreOpsController_updateStoreCustomerTier",
+        "parameters": [
+          {
+            "name": "customerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStoreCustomerTierDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Etiqueta o promueve un comprador entre RETAIL y WHOLESALE_B2B",
+        "tags": [
+          "Store Operations (Payments, Shipping & B2B Customers)"
+        ]
+      }
+    },
     "/api/v1/storefront/config": {
       "get": {
         "operationId": "StorefrontController_getConfig",
@@ -2493,6 +3787,56 @@
           }
         ],
         "summary": "Actualiza el StoreTheme de la tienda actual e invalida caché Redis",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/current/settings": {
+      "patch": {
+        "operationId": "TenantsController_updateCurrentSettings",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza la configuración operativa y reglas B2B de la tienda (WhatsApp, moneda, mínimos mayoristas)",
         "tags": [
           "Tenants"
         ]
@@ -3662,6 +5006,708 @@
           "data"
         ]
       },
+      "PresignUploadRequestDto": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "catalog",
+              "branding",
+              "receipt"
+            ],
+            "example": "catalog"
+          },
+          "contentType": {
+            "type": "string",
+            "example": "image/webp"
+          },
+          "sizeBytes": {
+            "type": "number",
+            "example": 420500,
+            "description": "Tamaño del archivo en bytes"
+          },
+          "originalFilename": {
+            "type": "string",
+            "example": "hoodie-negro.webp"
+          }
+        },
+        "required": [
+          "scope",
+          "contentType",
+          "sizeBytes"
+        ]
+      },
+      "PresignUploadResponseDto": {
+        "type": "object",
+        "properties": {
+          "uploadUrl": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          },
+          "bucket": {
+            "type": "string"
+          },
+          "isPrivate": {
+            "type": "boolean"
+          },
+          "publicUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "contentType": {
+            "type": "string"
+          },
+          "expiresInSeconds": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "uploadUrl",
+          "objectKey",
+          "bucket",
+          "isPrivate",
+          "contentType",
+          "expiresInSeconds"
+        ]
+      },
+      "PresignDownloadRequestDto": {
+        "type": "object",
+        "properties": {
+          "objectKey": {
+            "type": "string",
+            "example": "tenants/uuid/receipts/abc.pdf"
+          }
+        },
+        "required": [
+          "objectKey"
+        ]
+      },
+      "PresignDownloadResponseDto": {
+        "type": "object",
+        "properties": {
+          "downloadUrl": {
+            "type": "string"
+          },
+          "objectKey": {
+            "type": "string"
+          },
+          "expiresInSeconds": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "downloadUrl",
+          "objectKey",
+          "expiresInSeconds"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Hoodies & Buzos"
+          },
+          "slug": {
+            "type": "string",
+            "example": "hoodies-buzos"
+          },
+          "parentId": {
+            "type": "object"
+          },
+          "description": {
+            "type": "object"
+          },
+          "imageUrl": {
+            "type": "object"
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "object",
+            "nullable": true
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "imageUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "ProductImageInputDto": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "http://localhost:9000/catalog-public/tenants/.../img.webp"
+          },
+          "altText": {
+            "type": "object",
+            "example": "Vista frontal Hoodie"
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0
+          }
+        },
+        "required": [
+          "url"
+        ]
+      },
+      "CreateVariantDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string",
+            "example": "UT-HD-BLK-XL"
+          },
+          "title": {
+            "type": "string",
+            "example": "Talla XL · Negro Ónix"
+          },
+          "attributes": {
+            "type": "object",
+            "example": {
+              "talla": "XL",
+              "color": "Negro Ónix"
+            }
+          },
+          "retailPrice": {
+            "type": "number",
+            "example": 42
+          },
+          "compareAtPrice": {
+            "type": "object",
+            "example": 52,
+            "nullable": true
+          },
+          "stockOnHand": {
+            "type": "number",
+            "example": 40,
+            "default": 0
+          },
+          "lowStockThreshold": {
+            "type": "number",
+            "example": 5,
+            "default": 5
+          },
+          "weightGrams": {
+            "type": "object",
+            "example": 650,
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "sku",
+          "title",
+          "attributes",
+          "retailPrice"
+        ]
+      },
+      "WholesaleTierInputDto": {
+        "type": "object",
+        "properties": {
+          "minQuantity": {
+            "type": "number",
+            "example": 6
+          },
+          "maxQuantity": {
+            "type": "object",
+            "example": 11,
+            "nullable": true
+          },
+          "unitPrice": {
+            "type": "number",
+            "example": 32.5
+          },
+          "label": {
+            "type": "object",
+            "example": "Media Docena Mayorista",
+            "nullable": true
+          }
+        },
+        "required": [
+          "minQuantity",
+          "unitPrice"
+        ]
+      },
+      "CreateProductDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Remera Oversize Algodón 240gsm"
+          },
+          "slug": {
+            "type": "string",
+            "example": "remera-oversize-algodon-240gsm"
+          },
+          "categoryId": {
+            "type": "object",
+            "nullable": true
+          },
+          "shortDescription": {
+            "type": "object",
+            "nullable": true
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "brand": {
+            "type": "object",
+            "nullable": true
+          },
+          "isWholesaleOnly": {
+            "type": "boolean",
+            "default": false
+          },
+          "minOrderQty": {
+            "type": "number",
+            "default": 1
+          },
+          "isFeatured": {
+            "type": "boolean",
+            "default": false
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductImageInputDto"
+            }
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateVariantDto"
+            }
+          },
+          "wholesaleTiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WholesaleTierInputDto"
+            }
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "UpdateProductDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "object",
+            "nullable": true
+          },
+          "shortDescription": {
+            "type": "object",
+            "nullable": true
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "brand": {
+            "type": "object",
+            "nullable": true
+          },
+          "isWholesaleOnly": {
+            "type": "boolean"
+          },
+          "minOrderQty": {
+            "type": "number"
+          },
+          "isFeatured": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "images": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductImageInputDto"
+            }
+          }
+        }
+      },
+      "VariantMatrixAxisDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "talla"
+          },
+          "values": {
+            "example": [
+              "S",
+              "M",
+              "L"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "values"
+        ]
+      },
+      "GenerateVariantMatrixDto": {
+        "type": "object",
+        "properties": {
+          "axes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/VariantMatrixAxisDto"
+            }
+          },
+          "skuPrefix": {
+            "type": "string",
+            "example": "REM-BOX"
+          },
+          "retailPrice": {
+            "type": "number",
+            "example": 25
+          },
+          "compareAtPrice": {
+            "type": "object",
+            "example": 32,
+            "nullable": true
+          },
+          "stockOnHand": {
+            "type": "number",
+            "example": 20,
+            "default": 0
+          },
+          "lowStockThreshold": {
+            "type": "number",
+            "example": 5,
+            "default": 5
+          },
+          "weightGrams": {
+            "type": "object",
+            "example": 350,
+            "nullable": true
+          }
+        },
+        "required": [
+          "axes",
+          "skuPrefix",
+          "retailPrice"
+        ]
+      },
+      "UpdateVariantDto": {
+        "type": "object",
+        "properties": {
+          "sku": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "attributes": {
+            "type": "object"
+          },
+          "retailPrice": {
+            "type": "number"
+          },
+          "compareAtPrice": {
+            "type": "object",
+            "nullable": true
+          },
+          "lowStockThreshold": {
+            "type": "number"
+          },
+          "weightGrams": {
+            "type": "object",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "AdjustStockDto": {
+        "type": "object",
+        "properties": {
+          "mode": {
+            "type": "string",
+            "enum": [
+              "SET",
+              "DELTA"
+            ],
+            "example": "DELTA"
+          },
+          "quantity": {
+            "type": "number",
+            "example": 10,
+            "description": "Cantidad final (SET) o variación +/- (DELTA)"
+          }
+        },
+        "required": [
+          "mode",
+          "quantity"
+        ]
+      },
+      "ReplaceWholesaleTiersDto": {
+        "type": "object",
+        "properties": {
+          "tiers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/WholesaleTierInputDto"
+            }
+          }
+        },
+        "required": [
+          "tiers"
+        ]
+      },
+      "CreatePaymentMethodDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "BANK_TRANSFER",
+              "QR_CODE",
+              "MOBILE_PAYMENT",
+              "CASH_ON_DELIVERY",
+              "WHATSAPP_B2B"
+            ],
+            "example": "BANK_TRANSFER"
+          },
+          "title": {
+            "type": "string",
+            "example": "Transferencia Banco Nación"
+          },
+          "instructions": {
+            "type": "object",
+            "nullable": true
+          },
+          "accountDetailsJson": {
+            "type": "object",
+            "nullable": true,
+            "example": {
+              "banco": "Banco Nación",
+              "alias": "MI.TIENDA",
+              "titular": "Mi Tienda SRL"
+            }
+          },
+          "qrImageUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "requiresReceipt": {
+            "type": "boolean",
+            "default": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "type",
+          "title"
+        ]
+      },
+      "UpdatePaymentMethodDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "BANK_TRANSFER",
+              "QR_CODE",
+              "MOBILE_PAYMENT",
+              "CASH_ON_DELIVERY",
+              "WHATSAPP_B2B"
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "instructions": {
+            "type": "object",
+            "nullable": true
+          },
+          "accountDetailsJson": {
+            "type": "object",
+            "nullable": true
+          },
+          "qrImageUrl": {
+            "type": "object",
+            "nullable": true
+          },
+          "requiresReceipt": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateShippingZoneDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Envío Moto Express AMBA"
+          },
+          "cities": {
+            "example": [
+              "CABA",
+              "Vicente López",
+              "San Isidro"
+            ],
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "flatRate": {
+            "type": "number",
+            "example": 6.5
+          },
+          "freeShippingThreshold": {
+            "type": "object",
+            "example": 100,
+            "nullable": true
+          },
+          "isLocalPickup": {
+            "type": "boolean",
+            "default": false
+          },
+          "pickupAddress": {
+            "type": "object",
+            "nullable": true
+          },
+          "estimatedDays": {
+            "type": "object",
+            "example": "24 a 48 hs hábiles",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          }
+        },
+        "required": [
+          "name",
+          "cities",
+          "flatRate"
+        ]
+      },
+      "UpdateShippingZoneDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "cities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "flatRate": {
+            "type": "number"
+          },
+          "freeShippingThreshold": {
+            "type": "object",
+            "nullable": true
+          },
+          "isLocalPickup": {
+            "type": "boolean"
+          },
+          "pickupAddress": {
+            "type": "object",
+            "nullable": true
+          },
+          "estimatedDays": {
+            "type": "object",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "UpdateStoreCustomerTierDto": {
+        "type": "object",
+        "properties": {
+          "customerTier": {
+            "type": "string",
+            "enum": [
+              "RETAIL",
+              "WHOLESALE_B2B"
+            ],
+            "example": "WHOLESALE_B2B"
+          },
+          "phone": {
+            "type": "object",
+            "nullable": true
+          },
+          "taxId": {
+            "type": "object",
+            "nullable": true
+          }
+        },
+        "required": [
+          "customerTier"
+        ]
+      },
       "ValidateCouponDto": {
         "type": "object",
         "properties": {
@@ -4083,6 +6129,47 @@
               "type": "object"
             },
             "nullable": true
+          }
+        }
+      },
+      "UpdateTenantSettingsDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Urban Threads Studio"
+          },
+          "description": {
+            "type": "object",
+            "nullable": true
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "whatsappSalesNumber": {
+            "type": "object",
+            "example": "+5491145550199",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "object",
+            "example": "ventas@tienda.com",
+            "nullable": true
+          },
+          "minWholesaleAmount": {
+            "type": "object",
+            "example": 150,
+            "nullable": true
+          },
+          "minWholesaleQty": {
+            "type": "object",
+            "example": 6,
+            "nullable": true
+          },
+          "stockReservationMins": {
+            "type": "number",
+            "example": 120
           }
         }
       }

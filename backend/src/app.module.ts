@@ -19,6 +19,9 @@ import { HealthModule } from './modules/health/health.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PlansModule } from './modules/plans/plans.module';
 import { PlatformAdminModule } from './modules/platform-admin/platform-admin.module';
+import { CatalogModule } from './modules/catalog/catalog.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { StoreOpsModule } from './modules/store-ops/store-ops.module';
 import { StorefrontModule } from './modules/storefront/storefront.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { CartModule } from './modules/cart/cart.module';
@@ -92,6 +95,9 @@ type JwtExpiresIn = NonNullable<JwtModuleOptions['signOptions']>['expiresIn'];
     PlansModule,
     PlatformAdminModule,
     SubscriptionsModule,
+    StorageModule,
+    CatalogModule,
+    StoreOpsModule,
     StorefrontModule,
     CartModule,
     TenantsModule,
