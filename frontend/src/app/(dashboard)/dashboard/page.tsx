@@ -5,16 +5,14 @@ import Link from 'next/link';
 import {
   AlertTriangle,
   ArrowUpRight,
-  Building2,
   CheckCircle2,
   CreditCard,
   ExternalLink,
   Landmark,
-  Plus,
-  RefreshCw,
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { DashboardNav } from '@/components/dashboard/DashboardNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import apiClient from '@/lib/api-client';
@@ -257,51 +255,14 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="size-9 rounded-lg bg-slate-900 text-white flex items-center justify-center">
-              <Building2 className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-slate-900 leading-tight">
-                Panel de Comercio & Suscripción
-              </h1>
-              <p className="text-xs text-slate-500">Gestiona tu tienda, cuotas y facturación SaaS</p>
-            </div>
-          </div>
+      <DashboardNav
+        stores={stores}
+        selectedSlug={selectedSlug}
+        onSelectStore={handleSelectStore}
+        onRefresh={() => void loadSubscription(selectedSlug || undefined)}
+      />
 
-          <div className="flex items-center gap-2">
-            {stores.length > 1 && (
-              <select
-                value={selectedSlug}
-                onChange={(e) => handleSelectStore(e.target.value)}
-                className="h-8 rounded-lg border border-slate-200 bg-white px-2.5 text-xs font-medium text-slate-700"
-              >
-                {stores.map((s) => (
-                  <option key={s.id} value={s.slug}>
-                    {s.name} ({s.slug})
-                  </option>
-                ))}
-              </select>
-            )}
-            <Link href="/dashboard/onboarding">
-              <Button size="sm">
-                <Plus className="size-4" /> Nueva tienda
-              </Button>
-            </Link>
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => void loadSubscription(selectedSlug || undefined)}
-            >
-              <RefreshCw className="size-3.5" />
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         {error && (
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 flex items-center justify-between gap-4">
             <span>{error}</span>
