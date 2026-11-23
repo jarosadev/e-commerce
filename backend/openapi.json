@@ -1,0 +1,4091 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Servicios operativos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDto"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Al menos un servicio dependiente está caído",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verifica estado de PostgreSQL y Redis",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/api/v1/auth/capabilities": {
+      "get": {
+        "operationId": "AuthController_getCapabilities",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthCapabilitiesResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Capacidades de autenticación habilitadas (Google OAuth o fallback local)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/register": {
+      "post": {
+        "operationId": "AuthController_registerPlatform",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registro de dueño de tienda (PlatformUser) con OTP por correo",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyPlatformOtp",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyOtpResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verifica código OTP de 6 dígitos para usuario de plataforma",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/resend-otp": {
+      "post": {
+        "operationId": "AuthController_resendPlatformOtp",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailOnlyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reenvía código OTP de verificación para usuario de plataforma",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/login": {
+      "post": {
+        "operationId": "AuthController_loginPlatform",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Inicio de sesión de usuario de plataforma con cookies HttpOnly",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPlatformPassword",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailOnlyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Solicita código OTP de recuperación de contraseña de plataforma",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/platform/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPlatformPassword",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Restablece la contraseña de plataforma validando código OTP",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/register": {
+      "post": {
+        "operationId": "AuthController_registerStoreCustomer",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Registro de cliente en una tienda específica (StoreCustomer)",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/verify-otp": {
+      "post": {
+        "operationId": "AuthController_verifyStoreCustomerOtp",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VerifyOtpDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VerifyOtpResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verifica código OTP de 6 dígitos para cliente de tienda",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/resend-otp": {
+      "post": {
+        "operationId": "AuthController_resendStoreCustomerOtp",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailOnlyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Reenvía código OTP de verificación para cliente de tienda",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/login": {
+      "post": {
+        "operationId": "AuthController_loginStoreCustomer",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Inicio de sesión de cliente de tienda con cookies HttpOnly",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotStoreCustomerPassword",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EmailOnlyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Solicita código OTP de recuperación de contraseña en tienda",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/store/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetStoreCustomerPassword",
+        "parameters": [
+          {
+            "name": "x-tenant-slug",
+            "in": "header",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthMessageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Restablece la contraseña de cliente de tienda validando OTP",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Rotación atómica de Refresh Token con detección de reuso",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Cierra sesión revocando familia de tokens y limpiando cookies",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthUserDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Retorna perfil actualizado y sanitizado de la sesión activa",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/google": {
+      "get": {
+        "operationId": "AuthController_startGoogleAuth",
+        "parameters": [
+          {
+            "name": "scope",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "platform",
+              "type": "string",
+              "enum": [
+                "platform",
+                "store"
+              ]
+            }
+          },
+          {
+            "name": "returnHost",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "localhost:3000",
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantSlug",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "moda-mayorista",
+              "type": "string"
+            }
+          },
+          {
+            "name": "guestCartToken",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Inicia flujo Google OAuth 2.0 o redirige al fallback local",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/google/callback": {
+      "get": {
+        "operationId": "AuthController_googleCallback",
+        "parameters": [
+          {
+            "name": "code",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "state",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "error",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Callback central de Google OAuth 2.0",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/auth/google/exchange": {
+      "post": {
+        "operationId": "AuthController_exchangeGoogleCode",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GoogleExchangeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Intercambia código efímero OAuth por cookies HttpOnly de sesión",
+        "tags": [
+          "Auth"
+        ]
+      }
+    },
+    "/api/v1/plans": {
+      "get": {
+        "operationId": "PlansController_listPublicPlans",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Lista planes SaaS activos ordenados por sortOrder y precio",
+        "tags": [
+          "Plans"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/plans": {
+      "get": {
+        "operationId": "PlatformAdminPlansController_listAllPlans",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PlanResponseDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista todos los planes SaaS (incluidos inactivos) para SuperAdmin",
+        "tags": [
+          "Platform Admin - Plans"
+        ]
+      },
+      "post": {
+        "operationId": "PlatformAdminPlansController_createPlan",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea un nuevo plan SaaS",
+        "tags": [
+          "Platform Admin - Plans"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/plans/{id}": {
+      "patch": {
+        "operationId": "PlatformAdminPlansController_updatePlan",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza precios, límites o estado de un plan SaaS",
+        "tags": [
+          "Platform Admin - Plans"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/overview": {
+      "get": {
+        "operationId": "PlatformAdminController_getOverview",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Overview data"
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get platform overview & normalized SaaS MRR KPIs",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/clients": {
+      "get": {
+        "operationId": "PlatformAdminController_listClients",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "tenantStatus",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "TRIAL",
+                "ACTIVE",
+                "PAST_DUE",
+                "SUSPENDED"
+              ]
+            }
+          },
+          {
+            "name": "planCode",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List CRM store owners with search, tenantStatus and planCode filters",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/clients/{ownerId}": {
+      "get": {
+        "operationId": "PlatformAdminController_getClientDetail",
+        "parameters": [
+          {
+            "name": "ownerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get full CRM client fiche including stores, quota usage and payments",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      },
+      "patch": {
+        "operationId": "PlatformAdminController_updateClientProfile",
+        "parameters": [
+          {
+            "name": "ownerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateClientProfileDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update CRM client fiscal/commercial profile and internal notes",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/clients/{ownerId}/notes": {
+      "post": {
+        "operationId": "PlatformAdminController_appendClientNote",
+        "parameters": [
+          {
+            "name": "ownerId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppendClientNoteDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Append timestamped note to CRM client internal log",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/tenants/{tenantId}/status": {
+      "patch": {
+        "operationId": "PlatformAdminController_updateTenantStatus",
+        "parameters": [
+          {
+            "name": "tenantId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTenantStatusDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update tenant operational status (TRIAL, ACTIVE, PAST_DUE, SUSPENDED)",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/payments": {
+      "get": {
+        "operationId": "PlatformAdminController_listPayments",
+        "parameters": [
+          {
+            "name": "reviewStatus",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "PENDING",
+                "APPROVED",
+                "REJECTED"
+              ]
+            }
+          },
+          {
+            "name": "tenantId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List SaaS subscription payments with reviewStatus and tenantId filters",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      },
+      "post": {
+        "operationId": "PlatformAdminController_createPayment",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSubscriptionPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Register a manual SaaS subscription payment on behalf of a store",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/payments/{paymentId}/review": {
+      "patch": {
+        "operationId": "PlatformAdminController_reviewPayment",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReviewSubscriptionPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Approve or reject a pending SaaS subscription payment",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/platform-admin/subscriptions/run-lifecycle-check": {
+      "post": {
+        "operationId": "PlatformAdminController_runLifecycleCheck",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LifecycleRunResultDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Execute SaaS subscription lifecycle sweep (expiring reminders, PAST_DUE grace period, auto-suspension)",
+        "tags": [
+          "Platform Admin - CRM"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/current": {
+      "get": {
+        "operationId": "SubscriptionsController_getCurrentSubscription",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Obtiene suscripción actual, cuotas usadas, historial de pagos y planes disponibles",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/change-plan": {
+      "post": {
+        "operationId": "SubscriptionsController_changePlan",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePlanDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Cambia de plan SaaS o ciclo de facturación validando cuotas actuales",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/checkout/stripe": {
+      "post": {
+        "operationId": "SubscriptionsController_createStripeCheckout",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheckoutSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una sesión de Stripe Billing Checkout (modo live o sandbox local)",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/checkout/mercadopago": {
+      "post": {
+        "operationId": "SubscriptionsController_createMercadoPagoCheckout",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCheckoutSessionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CheckoutSessionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una suscripción recurrente en MercadoPago (modo live o sandbox local)",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/manual-payments": {
+      "post": {
+        "operationId": "SubscriptionsController_submitManualPayment",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitManualSubscriptionPaymentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionPaymentItemDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Reporta un pago manual de suscripción por transferencia para validación SuperAdmin",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/cancel": {
+      "post": {
+        "operationId": "SubscriptionsController_toggleCancelAtPeriodEnd",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelSubscriptionDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubscriptionSummaryDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Programa o revierte la cancelación al final del período actual",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/webhooks/stripe": {
+      "post": {
+        "operationId": "SubscriptionsController_handleStripeWebhook",
+        "parameters": [
+          {
+            "name": "stripe-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StripeWebhookPayloadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookAckDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Webhook idempotente de Stripe Billing (activación, fallo de pago y cancelación)",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/subscriptions/webhooks/mercadopago": {
+      "post": {
+        "operationId": "SubscriptionsController_handleMercadoPagoWebhook",
+        "parameters": [
+          {
+            "name": "x-signature",
+            "required": true,
+            "in": "header",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MercadoPagoWebhookPayloadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WebhookAckDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Webhook idempotente de MercadoPago Suscripciones",
+        "tags": [
+          "Subscriptions & SaaS Billing"
+        ]
+      }
+    },
+    "/api/v1/storefront/config": {
+      "get": {
+        "operationId": "StorefrontController_getConfig",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storefront"
+        ]
+      }
+    },
+    "/api/v1/storefront/products": {
+      "get": {
+        "operationId": "StorefrontController_listProducts",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categorySlug",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "featured",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "inStock",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "wholesaleOnly",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "minPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "maxPrice",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "featured",
+                "newest",
+                "name_asc",
+                "price_asc",
+                "price_desc"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storefront"
+        ]
+      }
+    },
+    "/api/v1/storefront/products/{slug}": {
+      "get": {
+        "operationId": "StorefrontController_getProductBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storefront"
+        ]
+      }
+    },
+    "/api/v1/storefront/coupons/validate": {
+      "post": {
+        "operationId": "StorefrontController_validateCoupon",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ValidateCouponDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Storefront"
+        ]
+      }
+    },
+    "/api/v1/cart/items": {
+      "post": {
+        "operationId": "CartController_addItem",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddCartItemDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Cart"
+        ]
+      }
+    },
+    "/api/v1/tenants/resolve": {
+      "get": {
+        "operationId": "TenantsController_resolveTenant",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "example": "moda-mayorista",
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Resuelve información pública de tienda por x-tenant-host, x-tenant-slug o ?slug=",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/check-slug": {
+      "get": {
+        "operationId": "TenantsController_checkSlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "query",
+            "schema": {
+              "example": "mi-tienda-b2b",
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlugAvailabilityDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Verifica disponibilidad en tiempo real de un subdominio para el onboarding",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants": {
+      "post": {
+        "operationId": "TenantsController_createTenant",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTenantDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Crea una nueva tienda en TRIAL con tema y suscripción de 14 días",
+        "tags": [
+          "Tenants"
+        ]
+      },
+      "get": {
+        "operationId": "TenantsController_listMyTenants",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TenantDetailDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Lista las tiendas del usuario autenticado",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/current": {
+      "get": {
+        "operationId": "TenantsController_getCurrentTenant",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantDetailDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Retorna la tienda actual resuelta o la primera tienda del usuario",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    },
+    "/api/v1/tenants/current/theme": {
+      "patch": {
+        "operationId": "TenantsController_updateCurrentTheme",
+        "parameters": [
+          {
+            "name": "x-tenant-host",
+            "in": "header",
+            "required": false,
+            "description": "Hostname de tienda para resolución multi-tenant (ej. moda-mayorista.localhost:3000)",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateStoreThemeDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreThemeDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "access_token": []
+          },
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Actualiza el StoreTheme de la tienda actual e invalida caché Redis",
+        "tags": [
+          "Tenants"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Vendexa SaaS Multi-Tenant E-Commerce API",
+    "description": "API de la plataforma SaaS Multi-Tienda E-Commerce (B2C + Mayorista B2B): Auth, Planes, CRM SuperAdmin, Storefront y Carrito Persistente.",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Access Token JWT de plataforma o cliente de tienda"
+      },
+      "access_token": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "access_token",
+        "description": "Cookie HttpOnly con Access Token JWT"
+      }
+    },
+    "schemas": {
+      "HealthResponseDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "example": "ok",
+            "enum": [
+              "ok",
+              "error"
+            ]
+          },
+          "db": {
+            "type": "string",
+            "example": "up",
+            "enum": [
+              "up",
+              "down"
+            ]
+          },
+          "redis": {
+            "type": "string",
+            "example": "up",
+            "enum": [
+              "up",
+              "down"
+            ]
+          },
+          "timestamp": {
+            "type": "string",
+            "example": "2026-11-17T22:30:00.000Z"
+          }
+        },
+        "required": [
+          "status",
+          "db",
+          "redis",
+          "timestamp"
+        ]
+      },
+      "AuthCapabilitiesResponseDto": {
+        "type": "object",
+        "properties": {
+          "googleEnabled": {
+            "type": "boolean",
+            "example": false
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "oauth",
+              "local-fallback"
+            ],
+            "example": "local-fallback"
+          }
+        },
+        "required": [
+          "googleEnabled",
+          "mode"
+        ]
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "dueno@mitienda.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecretPass123!",
+            "minLength": 8
+          },
+          "fullName": {
+            "type": "string",
+            "example": "María González"
+          }
+        },
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ]
+      },
+      "AuthTenantSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "status"
+        ]
+      },
+      "AuthUserDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "actorType": {
+            "type": "string",
+            "enum": [
+              "PLATFORM",
+              "CUSTOMER"
+            ]
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "SUPER_ADMIN",
+              "STORE_OWNER",
+              "STORE_STAFF",
+              "CUSTOMER"
+            ]
+          },
+          "avatarUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "tenantId": {
+            "type": "string",
+            "nullable": true
+          },
+          "customerTier": {
+            "type": "string",
+            "enum": [
+              "RETAIL",
+              "WHOLESALE_B2B"
+            ],
+            "nullable": true
+          },
+          "emailVerifiedAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "ownedTenants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuthTenantSummaryDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "email",
+          "fullName",
+          "actorType",
+          "role"
+        ]
+      },
+      "VerifyOtpDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "dueno@mitienda.com"
+          },
+          "otp": {
+            "type": "string",
+            "example": "123456",
+            "minLength": 6,
+            "maxLength": 6
+          }
+        },
+        "required": [
+          "email",
+          "otp"
+        ]
+      },
+      "VerifyOtpResponseDto": {
+        "type": "object",
+        "properties": {
+          "verified": {
+            "type": "boolean",
+            "example": true
+          },
+          "email": {
+            "type": "string",
+            "example": "usuario@ejemplo.com"
+          }
+        },
+        "required": [
+          "verified",
+          "email"
+        ]
+      },
+      "EmailOnlyDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "dueno@mitienda.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "AuthMessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "message": {
+            "type": "string",
+            "example": "Si el correo existe, recibirás un código de verificación."
+          }
+        },
+        "required": [
+          "success",
+          "message"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "dueno@mitienda.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "SecretPass123!"
+          },
+          "guestCartToken": {
+            "type": "string",
+            "description": "Token opcional de carrito de invitado para fusionar al iniciar sesión"
+          }
+        },
+        "required": [
+          "email",
+          "password"
+        ]
+      },
+      "AuthSessionResponseDto": {
+        "type": "object",
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/AuthUserDto"
+          }
+        },
+        "required": [
+          "user"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "dueno@mitienda.com"
+          },
+          "otp": {
+            "type": "string",
+            "example": "123456",
+            "minLength": 6,
+            "maxLength": 6
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "NewSecretPass456!",
+            "minLength": 8
+          }
+        },
+        "required": [
+          "email",
+          "otp",
+          "newPassword"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token alternativo si no se envía por cookie HttpOnly"
+          }
+        }
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "loggedOut": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "loggedOut"
+        ]
+      },
+      "GoogleExchangeDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "Código efímero de un solo uso emitido por el broker Google OAuth"
+          },
+          "guestCartToken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "PlanResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "priceMonthly": {
+            "type": "number",
+            "example": 49
+          },
+          "priceYearly": {
+            "type": "number",
+            "example": 490
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD"
+          },
+          "maxProducts": {
+            "type": "number",
+            "example": 1500
+          },
+          "maxStaff": {
+            "type": "number",
+            "example": 3
+          },
+          "allowCustomDomain": {
+            "type": "boolean"
+          },
+          "allowCsvImport": {
+            "type": "boolean"
+          },
+          "allowAbandonedCart": {
+            "type": "boolean"
+          },
+          "allowWholesale": {
+            "type": "boolean"
+          },
+          "allowCoupons": {
+            "type": "boolean"
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "sortOrder": {
+            "type": "number"
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "priceMonthly",
+          "priceYearly",
+          "currency",
+          "maxProducts",
+          "maxStaff",
+          "allowCustomDomain",
+          "allowCsvImport",
+          "allowAbandonedCart",
+          "allowWholesale",
+          "allowCoupons",
+          "isActive",
+          "sortOrder",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreatePlanDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "CRECIMIENTO_PRO"
+          },
+          "name": {
+            "type": "string",
+            "example": "Plan Crecimiento Pro"
+          },
+          "description": {
+            "type": "string",
+            "example": "Dominio propio, importador CSV y mayorista B2B."
+          },
+          "priceMonthly": {
+            "type": "number",
+            "example": 49,
+            "minimum": 0
+          },
+          "priceYearly": {
+            "type": "number",
+            "example": 490,
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "maxProducts": {
+            "type": "number",
+            "example": 1500,
+            "minimum": 1
+          },
+          "maxStaff": {
+            "type": "number",
+            "example": 3,
+            "minimum": 1
+          },
+          "allowCustomDomain": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowCsvImport": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowAbandonedCart": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowWholesale": {
+            "type": "boolean",
+            "default": true
+          },
+          "allowCoupons": {
+            "type": "boolean",
+            "default": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "priceMonthly",
+          "priceYearly",
+          "maxProducts",
+          "maxStaff"
+        ]
+      },
+      "UpdatePlanDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "CRECIMIENTO_PRO"
+          },
+          "name": {
+            "type": "string",
+            "example": "Plan Crecimiento Pro"
+          },
+          "description": {
+            "type": "string",
+            "example": "Dominio propio, importador CSV y mayorista B2B."
+          },
+          "priceMonthly": {
+            "type": "number",
+            "example": 49,
+            "minimum": 0
+          },
+          "priceYearly": {
+            "type": "number",
+            "example": 490,
+            "minimum": 0
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "maxProducts": {
+            "type": "number",
+            "example": 1500,
+            "minimum": 1
+          },
+          "maxStaff": {
+            "type": "number",
+            "example": 3,
+            "minimum": 1
+          },
+          "allowCustomDomain": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowCsvImport": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowAbandonedCart": {
+            "type": "boolean",
+            "default": false
+          },
+          "allowWholesale": {
+            "type": "boolean",
+            "default": true
+          },
+          "allowCoupons": {
+            "type": "boolean",
+            "default": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "default": true
+          },
+          "sortOrder": {
+            "type": "number",
+            "default": 0,
+            "minimum": 0
+          }
+        }
+      },
+      "UpdateClientProfileDto": {
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "legalName": {
+            "type": "string",
+            "nullable": true
+          },
+          "taxId": {
+            "type": "string",
+            "nullable": true
+          },
+          "phoneWhatsapp": {
+            "type": "string",
+            "nullable": true
+          },
+          "country": {
+            "type": "string",
+            "nullable": true
+          },
+          "city": {
+            "type": "string",
+            "nullable": true
+          },
+          "fiscalAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "businessCategory": {
+            "type": "string",
+            "nullable": true
+          },
+          "acquisitionSource": {
+            "type": "string",
+            "nullable": true
+          },
+          "internalAdminNotes": {
+            "type": "string",
+            "nullable": true
+          },
+          "onboardingCompleted": {
+            "type": "boolean",
+            "nullable": true
+          }
+        }
+      },
+      "AppendClientNoteDto": {
+        "type": "object",
+        "properties": {
+          "note": {
+            "type": "string",
+            "example": "Llamada de seguimiento: confirmó upgrade a Plan Pro la próxima semana."
+          }
+        },
+        "required": [
+          "note"
+        ]
+      },
+      "UpdateTenantStatusDto": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "TRIAL",
+              "ACTIVE",
+              "PAST_DUE",
+              "SUSPENDED"
+            ]
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "CreateSubscriptionPaymentDto": {
+        "type": "object",
+        "properties": {
+          "subscriptionId": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "externalReference": {
+            "type": "string"
+          },
+          "receiptFileKey": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount"
+        ]
+      },
+      "ReviewSubscriptionPaymentDto": {
+        "type": "object",
+        "properties": {
+          "reviewStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "reviewStatus"
+        ]
+      },
+      "LifecycleRunResultDto": {
+        "type": "object",
+        "properties": {
+          "remindedCount": {
+            "type": "number"
+          },
+          "movedToGraceCount": {
+            "type": "number"
+          },
+          "suspendedCount": {
+            "type": "number"
+          },
+          "canceledAtPeriodEndCount": {
+            "type": "number"
+          },
+          "executedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "remindedCount",
+          "movedToGraceCount",
+          "suspendedCount",
+          "canceledAtPeriodEndCount",
+          "executedAt"
+        ]
+      },
+      "SubscriptionUsageDto": {
+        "type": "object",
+        "properties": {
+          "productsUsed": {
+            "type": "number"
+          },
+          "maxProducts": {
+            "type": "number"
+          },
+          "productsUsagePercent": {
+            "type": "number"
+          },
+          "staffUsed": {
+            "type": "number"
+          },
+          "maxStaff": {
+            "type": "number"
+          },
+          "staffUsagePercent": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "productsUsed",
+          "maxProducts",
+          "productsUsagePercent",
+          "staffUsed",
+          "maxStaff",
+          "staffUsagePercent"
+        ]
+      },
+      "SubscriptionPaymentItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "STRIPE",
+              "MERCADOPAGO",
+              "MANUAL_TRANSFER"
+            ]
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "externalReference": {
+            "type": "object",
+            "nullable": true
+          },
+          "receiptFileKey": {
+            "type": "object",
+            "nullable": true
+          },
+          "reviewStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED",
+              "REJECTED"
+            ]
+          },
+          "paidAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "provider",
+          "amount",
+          "currency",
+          "reviewStatus",
+          "createdAt"
+        ]
+      },
+      "SubscriptionSummaryDto": {
+        "type": "object",
+        "properties": {
+          "tenantId": {
+            "type": "string"
+          },
+          "tenantSlug": {
+            "type": "string"
+          },
+          "tenantName": {
+            "type": "string"
+          },
+          "tenantStatus": {
+            "type": "string",
+            "enum": [
+              "TRIAL",
+              "ACTIVE",
+              "PAST_DUE",
+              "SUSPENDED"
+            ]
+          },
+          "subscriptionId": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "TRIALING",
+              "ACTIVE",
+              "PAST_DUE",
+              "CANCELED",
+              "SUSPENDED"
+            ]
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ]
+          },
+          "currentPeriodStart": {
+            "type": "string"
+          },
+          "currentPeriodEnd": {
+            "type": "string"
+          },
+          "gracePeriodEndsAt": {
+            "type": "object",
+            "nullable": true
+          },
+          "cancelAtPeriodEnd": {
+            "type": "boolean"
+          },
+          "daysUntilPeriodEnd": {
+            "type": "number"
+          },
+          "isInGracePeriod": {
+            "type": "boolean"
+          },
+          "graceDaysRemaining": {
+            "type": "number"
+          },
+          "plan": {
+            "type": "object"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/SubscriptionUsageDto"
+          },
+          "payments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SubscriptionPaymentItemDto"
+            }
+          },
+          "availablePlans": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "tenantId",
+          "tenantSlug",
+          "tenantName",
+          "tenantStatus",
+          "subscriptionId",
+          "status",
+          "billingCycle",
+          "currentPeriodStart",
+          "currentPeriodEnd",
+          "cancelAtPeriodEnd",
+          "daysUntilPeriodEnd",
+          "isInGracePeriod",
+          "graceDaysRemaining",
+          "plan",
+          "usage",
+          "payments",
+          "availablePlans"
+        ]
+      },
+      "ChangePlanDto": {
+        "type": "object",
+        "properties": {
+          "planCode": {
+            "type": "string",
+            "example": "CRECIMIENTO_PRO"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "default": "MONTHLY"
+          }
+        }
+      },
+      "CreateCheckoutSessionDto": {
+        "type": "object",
+        "properties": {
+          "planCode": {
+            "type": "string",
+            "example": "CRECIMIENTO_PRO"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "default": "MONTHLY"
+          },
+          "successUrl": {
+            "type": "string",
+            "example": "http://localhost:3000/dashboard?billing=success"
+          },
+          "cancelUrl": {
+            "type": "string",
+            "example": "http://localhost:3000/dashboard?billing=cancelled"
+          }
+        }
+      },
+      "CheckoutSessionResponseDto": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "STRIPE",
+              "MERCADOPAGO"
+            ]
+          },
+          "mode": {
+            "type": "string",
+            "enum": [
+              "live",
+              "sandbox"
+            ]
+          },
+          "sessionId": {
+            "type": "string"
+          },
+          "checkoutUrl": {
+            "type": "string"
+          },
+          "amount": {
+            "type": "number"
+          },
+          "currency": {
+            "type": "string"
+          },
+          "planCode": {
+            "type": "string"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ]
+          }
+        },
+        "required": [
+          "provider",
+          "mode",
+          "sessionId",
+          "checkoutUrl",
+          "amount",
+          "currency",
+          "planCode",
+          "billingCycle"
+        ]
+      },
+      "SubmitManualSubscriptionPaymentDto": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "example": 49
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "externalReference": {
+            "type": "string",
+            "example": "TRF-2026-88412"
+          },
+          "receiptFileKey": {
+            "type": "string",
+            "example": "receipts/2026/trf-88412.pdf"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ]
+          },
+          "targetPlanCode": {
+            "type": "string",
+            "example": "CRECIMIENTO_PRO"
+          }
+        },
+        "required": [
+          "amount",
+          "externalReference"
+        ]
+      },
+      "CancelSubscriptionDto": {
+        "type": "object",
+        "properties": {
+          "cancelAtPeriodEnd": {
+            "type": "boolean",
+            "example": true
+          }
+        },
+        "required": [
+          "cancelAtPeriodEnd"
+        ]
+      },
+      "StripeWebhookPayloadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "evt_test_123456"
+          },
+          "type": {
+            "type": "string",
+            "example": "invoice.payment_succeeded",
+            "description": "Supported types: invoice.payment_succeeded, checkout.session.completed, invoice.payment_failed, customer.subscription.deleted"
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "object": {
+                "amount_paid": 4900,
+                "currency": "usd",
+                "subscription": "sub_stripe_123",
+                "metadata": {
+                  "tenantId": "uuid",
+                  "billingCycle": "MONTHLY"
+                }
+              }
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "data"
+        ]
+      },
+      "WebhookAckDto": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "boolean"
+          },
+          "duplicate": {
+            "type": "boolean"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "eventId": {
+            "type": "string"
+          },
+          "actionTaken": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "received",
+          "duplicate",
+          "provider",
+          "eventId",
+          "actionTaken"
+        ]
+      },
+      "MercadoPagoWebhookPayloadDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "mp_evt_987654"
+          },
+          "action": {
+            "type": "string",
+            "example": "payment.approved",
+            "description": "Supported actions/types: payment.approved, subscription_authorized_payment, payment.rejected, subscription_cancelled"
+          },
+          "data": {
+            "type": "object",
+            "example": {
+              "tenantId": "uuid",
+              "subscriptionId": "uuid",
+              "amount": 49,
+              "currency": "USD",
+              "externalSubscriptionId": "mp_preapproval_123",
+              "billingCycle": "MONTHLY"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "action",
+          "data"
+        ]
+      },
+      "ValidateCouponDto": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string",
+            "example": "BIENVENIDA10"
+          },
+          "subtotal": {
+            "type": "number",
+            "example": 100
+          }
+        },
+        "required": [
+          "code"
+        ]
+      },
+      "AddCartItemDto": {
+        "type": "object",
+        "properties": {
+          "variantId": {
+            "type": "string"
+          },
+          "quantity": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "variantId",
+          "quantity"
+        ]
+      },
+      "StoreThemeDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "tenantId": {
+            "type": "string"
+          },
+          "logoUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "faviconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#0F172A"
+          },
+          "accentColor": {
+            "type": "string",
+            "example": "#2563EB"
+          },
+          "darkModeDefault": {
+            "type": "boolean"
+          },
+          "heroTitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "heroSubtitle": {
+            "type": "string",
+            "nullable": true
+          },
+          "heroBanners": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "object"
+            }
+          },
+          "announcementText": {
+            "type": "string",
+            "nullable": true
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "tenantId",
+          "primaryColor",
+          "accentColor",
+          "darkModeDefault",
+          "updatedAt"
+        ]
+      },
+      "TenantPlanSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "maxProducts": {
+            "type": "number"
+          },
+          "maxStaff": {
+            "type": "number"
+          },
+          "allowCustomDomain": {
+            "type": "boolean"
+          },
+          "allowCsvImport": {
+            "type": "boolean"
+          },
+          "allowAbandonedCart": {
+            "type": "boolean"
+          },
+          "allowWholesale": {
+            "type": "boolean"
+          },
+          "allowCoupons": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "maxProducts",
+          "maxStaff",
+          "allowCustomDomain",
+          "allowCsvImport",
+          "allowAbandonedCart",
+          "allowWholesale",
+          "allowCoupons"
+        ]
+      },
+      "TenantSubscriptionSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "TRIALING",
+              "ACTIVE",
+              "PAST_DUE",
+              "CANCELED",
+              "SUSPENDED"
+            ]
+          },
+          "currentPeriodStart": {
+            "type": "string"
+          },
+          "currentPeriodEnd": {
+            "type": "string"
+          },
+          "gracePeriodEndsAt": {
+            "type": "string",
+            "nullable": true
+          },
+          "plan": {
+            "$ref": "#/components/schemas/TenantPlanSummaryDto"
+          }
+        },
+        "required": [
+          "id",
+          "planId",
+          "billingCycle",
+          "status",
+          "currentPeriodStart",
+          "currentPeriodEnd"
+        ]
+      },
+      "TenantDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "TRIAL",
+              "ACTIVE",
+              "PAST_DUE",
+              "SUSPENDED"
+            ]
+          },
+          "currency": {
+            "type": "string"
+          },
+          "whatsappSalesNumber": {
+            "type": "string",
+            "nullable": true
+          },
+          "contactEmail": {
+            "type": "string",
+            "nullable": true
+          },
+          "minWholesaleAmount": {
+            "type": "number",
+            "nullable": true
+          },
+          "minWholesaleQty": {
+            "type": "number",
+            "nullable": true
+          },
+          "stockReservationMins": {
+            "type": "number"
+          },
+          "theme": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/StoreThemeDto"
+              }
+            ]
+          },
+          "subscription": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TenantSubscriptionSummaryDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "status",
+          "currency",
+          "stockReservationMins",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "SlugAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "slug": {
+            "type": "string",
+            "example": "mi-tienda-b2b"
+          },
+          "available": {
+            "type": "boolean",
+            "example": true
+          },
+          "reason": {
+            "type": "object",
+            "example": "Subdominio disponible.",
+            "nullable": true
+          }
+        },
+        "required": [
+          "slug",
+          "available"
+        ]
+      },
+      "CreateTenantDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Urban Threads Studio"
+          },
+          "slug": {
+            "type": "string",
+            "example": "mi-tienda-b2b"
+          },
+          "description": {
+            "type": "string",
+            "example": "Tienda mayorista y minorista de indumentaria."
+          },
+          "currency": {
+            "type": "string",
+            "example": "USD",
+            "default": "USD"
+          },
+          "whatsappSalesNumber": {
+            "type": "string",
+            "example": "5491155551234"
+          },
+          "contactEmail": {
+            "type": "string",
+            "example": "ventas@mitienda.com"
+          },
+          "minWholesaleAmount": {
+            "type": "number",
+            "example": 100,
+            "minimum": 0
+          },
+          "minWholesaleQty": {
+            "type": "number",
+            "example": 6,
+            "minimum": 1
+          },
+          "planCode": {
+            "type": "string",
+            "example": "EMPRENDEDOR"
+          },
+          "planId": {
+            "type": "string"
+          },
+          "billingCycle": {
+            "type": "string",
+            "enum": [
+              "MONTHLY",
+              "YEARLY"
+            ],
+            "default": "MONTHLY"
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#0F172A"
+          },
+          "accentColor": {
+            "type": "string",
+            "example": "#2563EB"
+          },
+          "heroTitle": {
+            "type": "string",
+            "example": "Bienvenidos a nuestra tienda"
+          },
+          "legalName": {
+            "type": "string"
+          },
+          "taxId": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "city": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "slug"
+        ]
+      },
+      "UpdateStoreThemeDto": {
+        "type": "object",
+        "properties": {
+          "logoUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/logo.png",
+            "nullable": true
+          },
+          "faviconUrl": {
+            "type": "string",
+            "example": "https://cdn.example.com/favicon.ico",
+            "nullable": true
+          },
+          "primaryColor": {
+            "type": "string",
+            "example": "#0F172A"
+          },
+          "accentColor": {
+            "type": "string",
+            "example": "#2563EB"
+          },
+          "darkModeDefault": {
+            "type": "boolean",
+            "example": false
+          },
+          "heroTitle": {
+            "type": "string",
+            "example": "Colección 2026",
+            "nullable": true
+          },
+          "heroSubtitle": {
+            "type": "string",
+            "example": "Envíos mayoristas a todo el país",
+            "nullable": true
+          },
+          "announcementText": {
+            "type": "string",
+            "example": "10% OFF en compras mayores a $150",
+            "nullable": true
+          },
+          "heroBanners": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

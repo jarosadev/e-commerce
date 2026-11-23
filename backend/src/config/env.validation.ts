@@ -22,16 +22,14 @@ export const envSchema = z.object({
 
   GOOGLE_CLIENT_ID: z.string().default(''),
   GOOGLE_CLIENT_SECRET: z.string().default(''),
-  GOOGLE_CALLBACK_URL: z
-    .string()
-    .default('http://localhost:4000/api/v1/auth/google/callback'),
+  GOOGLE_CALLBACK_URL: z.string().default('http://localhost:4000/api/v1/auth/google/callback'),
 
   SMTP_HOST: z.string().default('localhost'),
   SMTP_PORT: z.coerce.number().default(1025),
   SMTP_SECURE: z
-    .string()
-    .transform((v) => v === 'true')
-    .default('false'),
+    .union([z.boolean(), z.string()])
+    .default(false)
+    .transform((v) => (typeof v === 'boolean' ? v : v.toLowerCase() === 'true')),
   SMTP_USER: z.string().optional().default(''),
   SMTP_PASS: z.string().optional().default(''),
   MAIL_FROM_NAME: z.string().default('Vendexa E-Commerce'),
@@ -44,6 +42,13 @@ export const envSchema = z.object({
   S3_PUBLIC_BUCKET: z.string().default('catalog-public'),
   S3_PRIVATE_BUCKET: z.string().default('receipts-private'),
   S3_PUBLIC_BASE_URL: z.string().default('http://localhost:9000/catalog-public'),
+
+  STRIPE_SECRET_KEY: z.string().optional().default(''),
+  STRIPE_WEBHOOK_SECRET: z.string().optional().default(''),
+  MERCADOPAGO_ACCESS_TOKEN: z.string().optional().default(''),
+  MERCADOPAGO_WEBHOOK_SECRET: z.string().optional().default(''),
+  SUBSCRIPTION_GRACE_DAYS: z.coerce.number().int().min(1).max(30).default(5),
+  SUBSCRIPTION_REMINDER_DAYS: z.coerce.number().int().min(1).max(14).default(3),
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;
@@ -55,4 +60,26 @@ export function validateEnv(config: Record<string, unknown>): EnvConfig {
     throw new Error('Fallo en validación de variables de entorno.');
   }
   return parsed.data;
+}
+
+const GOOGLE_OAUTH_PLACEHOLDER_PATTERNS = [
+  /^your[-_]?google[-_]?client[-_]?(id|secret)/i,
+  /^(placeholder|changeme|replace[-_]?me|todo|example|<[^>]+>)$/i,
+  /^example[-_]/i,
+];
+
+function isPlaceholderCredential(value: string | undefined): boolean {
+  if (!value) return true;
+  const trimmed = value.trim();
+  if (!trimmed) return true;
+  return GOOGLE_OAUTH_PLACEHOLDER_PATTERNS.some((pattern) => pattern.test(trimmed));
+}
+
+export function isGoogleOAuthConfigured(
+  config: Pick<EnvConfig, 'GOOGLE_CLIENT_ID' | 'GOOGLE_CLIENT_SECRET'>,
+): boolean {
+  return (
+    !isPlaceholderCredential(config.GOOGLE_CLIENT_ID) &&
+    !isPlaceholderCredential(config.GOOGLE_CLIENT_SECRET)
+  );
 }

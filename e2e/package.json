@@ -1,0 +1,24 @@
+{
+  "name": "vendexa-saas-e2e",
+  "version": "0.1.0",
+  "description": "Opaque-box 4-tier E2E test suite for Vendexa SaaS Multi-Tienda E-Commerce",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test:self": "playwright test tests/self",
+    "test:tier1": "playwright test tests/tier1",
+    "test:tier2": "playwright test tests/tier2",
+    "test:tier3": "playwright test tests/tier3",
+    "test:tier4": "playwright test tests/tier4",
+    "test": "playwright test tests/tier1 tests/tier2 tests/tier3 tests/tier4"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "1.62.1",
+    "@types/node": "^22.13.0",
+    "eslint": "^9.39.5",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.56.0"
+  }
+}
